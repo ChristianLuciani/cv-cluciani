@@ -532,8 +532,74 @@ body {
 .contact-link:hover { color:var(--teal); border-color:var(--teal); background:rgba(0,201,192,.05); }
 
 /* ══════════════════════════════════════════════
-   UTILIDADES
+   BOTÓN DE DESCARGA — CV tradicional
+   Flota en esquina inferior derecha
 ══════════════════════════════════════════════ */
+#btn-download {
+  position: fixed;
+  bottom: 2rem;
+  right: 4rem;
+  z-index: 150;
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  padding: .75rem 1.4rem;
+  background: var(--night);
+  border: 1px solid var(--teal);
+  color: var(--teal);
+  font-family: var(--font-mono);
+  font-size: .62rem;
+  letter-spacing: .25em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background .3s, color .3s, box-shadow .3s;
+  opacity: 0;
+  animation: fadeUp 1s 2.6s both;
+}
+#btn-download:hover {
+  background: var(--teal);
+  color: var(--night);
+  box-shadow: 0 0 20px rgba(0,201,192,.35);
+}
+#btn-download svg {
+  width: 13px; height: 13px;
+  fill: none; stroke: currentColor;
+  stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+}
+
+/* ══════════════════════════════════════════════
+   ESTILOS DE IMPRESIÓN — CV plano para PDF
+   Se activa solo al hacer window.print()
+══════════════════════════════════════════════ */
+@media print {
+  /* Ocultar toda la interfaz interactiva */
+  body > *:not(#print-cv) { display: none !important; }
+  canvas, #loader, #nav, #progress, #btn-download,
+  .cursor, .cursor-ring, .room-canvas { display: none !important; }
+
+  /* Mostrar el CV imprimible */
+  #print-cv {
+    display: block !important;
+    font-family: Georgia, serif;
+    font-size: 11pt;
+    color: #111;
+    line-height: 1.6;
+    margin: 0;
+    padding: 2cm;
+    background: white;
+  }
+
+  #print-cv h1 { font-size: 22pt; margin-bottom: 2pt; }
+  #print-cv h2 { font-size: 13pt; border-bottom: 1pt solid #ccc; padding-bottom: 3pt; margin: 18pt 0 6pt; }
+  #print-cv h3 { font-size: 11pt; margin-bottom: 2pt; }
+  #print-cv .p-meta { font-size: 9pt; color: #555; margin-bottom: 2pt; }
+  #print-cv ul { padding-left: 1.2em; }
+  #print-cv li { margin-bottom: 2pt; }
+  #print-cv a  { color: #111; text-decoration: none; }
+  #print-cv .p-section { margin-bottom: 14pt; }
+  #print-cv .p-entry  { margin-bottom: 10pt; }
+  @page { margin: 2cm; size: A4; }
+}
 .hl      { color:var(--teal); }
 .hl-gold { color:var(--gold); }
 .two-col { display:grid; grid-template-columns:1fr 1fr; gap:4rem; }
@@ -560,7 +626,111 @@ body {
 <!-- ── BARRA DE PROGRESO ───────────────────────────── -->
 <div id="progress"></div>
 
-<!-- ── FRACTAL LOGO / LOADER ───────────────────────── -->
+<!-- ── BOTÓN DE DESCARGA CV TRADICIONAL ──────────── -->
+<button id="btn-download" onclick="printCV()" aria-label="Descargar CV">
+  <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+  CV Descargable
+</button>
+
+<!--
+  ══════════════════════════════════════════════
+  CV PLANO IMPRIMIBLE
+  Este div es invisible en pantalla.
+  Se muestra solo al imprimir (window.print()).
+  Para editar el CV descargable, edita aquí.
+  Para añadir secciones: duplica un .p-entry.
+  ══════════════════════════════════════════════
+-->
+<div id="print-cv" style="display:none">
+
+  <h1>Christian Luciani Toledo</h1>
+  <p class="p-meta">
+    Físico · Comunicador de Ciencias · Innovación Educativa<br>
+    cluciani@gmail.com · (+507) 6651-0074 · (+593) 99 371 6335<br>
+    LinkedIn: linkedin.com/in/christian-luciani · ResearchGate: researchgate.net/profile/Christian-Luciani<br>
+    Panamá / Quito, Ecuador · Nacionalidad venezolana · Cédula ecuatoriana 175904419-9
+  </p>
+
+  <div class="p-section">
+    <h2>Perfil</h2>
+    <p>Físico con candidatura doctoral en sistemas complejos (Universidad Simón Bolívar, 2003–2006) y más de 20 años de experiencia en investigación científica, docencia universitaria e innovación educativa. En 2024 diseñé e implementé Drahma, sistema de 36 tutores virtuales con IA y pedagogía socrática, alineados al currículo ecuatoriano K-12, desplegado dos meses antes de la disponibilidad pública de Khanmigo y probado en campo con comunidades indígenas del Amazonas ecuatoriano.</p>
+  </div>
+
+  <div class="p-section">
+    <h2>Formación</h2>
+    <div class="p-entry">
+      <h3>Licenciatura en Física</h3>
+      <p class="p-meta">Universidad Central de Venezuela · 1997–2003 · Tesis: Modelos Cosmológicos N-Dimensionales · SENESCYT: 862177536</p>
+    </div>
+    <div class="p-entry">
+      <h3>Candidatura Doctoral — Sistemas Complejos (ABD)</h3>
+      <p class="p-meta">Universidad Simón Bolívar, Venezuela · 2003–2006 · Todos los créditos completados, tesis pendiente</p>
+    </div>
+    <div class="p-entry">
+      <h3>Especialización en Audiovisuales</h3>
+      <p class="p-meta">Escuela de Cine y TV, Caracas · 2006–2008 · Prix du Public, FECOVEN 2008</p>
+    </div>
+    <div class="p-entry">
+      <h3>II Latin American School of High Energy Physics — CERN (Beca)</h3>
+      <p class="p-meta">San Miguel Regla, México · 2003</p>
+    </div>
+  </div>
+
+  <div class="p-section">
+    <h2>Experiencia Profesional</h2>
+    <div class="p-entry">
+      <h3>Consultor Estratégico de Sistemas · Independiente</h3>
+      <p class="p-meta">Panamá / Ecuador · 2025–presente</p>
+      <ul><li>Plataformas BI e infraestructura digital · Zoho ERP</li><li>Sistema de auditoría y registro de efectivo para casino tipo C</li><li>Arquitectura SaaS para gestión clínica</li></ul>
+    </div>
+    <div class="p-entry">
+      <h3>Coordinador de Laboratorios de Física · USFQ</h3>
+      <p class="p-meta">Quito, Ecuador · 2019–2024</p>
+      <ul><li>800+ estudiantes anuales · 36 guías de laboratorio originales</li><li>Diseño e implementación de Drahma (IA educativa) y Laboratorio STEM</li><li>Técnico-operador del difractómetro de rayos X · 5 co-publicaciones</li><li>Responsable de Seguridad Radiológica institucional</li></ul>
+    </div>
+    <div class="p-entry">
+      <h3>Diseñador de Sistemas / Luminotécnico · Grupo Angel / Fluge-Panamá</h3>
+      <p class="p-meta">Panamá · 2016–2018</p>
+      <ul><li>Sistema de registro de cuentas y bóveda para casinos</li></ul>
+    </div>
+    <div class="p-entry">
+      <h3>Logística BTL y Relación con Clientes · Magic Dreams Productions</h3>
+      <p class="p-meta">Panamá · 2010–2013</p>
+      <ul><li>Logística y montaje en eventos masivos · Coordinación de 1.000 pax (Desfile de Navidad 2013)</li><li>Clientes: Copa Airlines, Visa, ALTA, Cervecería Nacional, Herbalife</li></ul>
+    </div>
+    <div class="p-entry">
+      <h3>Director de Fotografía / Editor / Docente · Escuela de Cine y TV</h3>
+      <p class="p-meta">Venezuela · 2006–2010</p>
+      <ul><li>La Escalera de Patty — prix du public, FECOVEN 2008 · 9 Arepas — selección ESPN 2008</li></ul>
+    </div>
+    <div class="p-entry">
+      <h3>Profesor de Física · Universidad Simón Bolívar</h3>
+      <p class="p-meta">Caracas · 2003–2006</p>
+      <ul><li>Laboratorios de Física I, II y III para ingenierías y ciencias</li></ul>
+    </div>
+  </div>
+
+  <div class="p-section">
+    <h2>Publicaciones Seleccionadas</h2>
+    <ul>
+      <li>Trujillo Galarza et al. (2025). Caffeine-based PVA composite film for UV shielding. <em>Carbon Trends</em>, 20. https://doi.org/10.1016/j.cartre.2025.100502</li>
+      <li>Landázuri et al. (2025). Tunable Dielectric Carbon Materials. <em>ChemPhysChem</em>, 26. https://doi.org/10.1002/cphc.202400711</li>
+      <li>Zambrano et al. (2023). Microfibrillated cellulose from cocoa pod husk. <em>Heliyon</em>, 9. https://doi.org/10.1016/j.heliyon.2023.e17258</li>
+      <li>Cabrera, Luciani, Milton (2006). Neural control on multiple time scales. <em>Condensed Matter Physics</em>, 9(2). https://doi.org/10.5488/CMP.9.2.373</li>
+      <li>Hosaka, Ohira, Luciani, Cabrera, Milton (2006). Balancing with Noise and Delay. <em>Prog. Theor. Phys. Supplement</em>, 161. https://doi.org/10.1143/PTPS.161.314</li>
+      <li>36 guías de prácticas de laboratorio de física — USFQ (2019–2024)</li>
+    </ul>
+  </div>
+
+  <div class="p-section">
+    <h2>Competencias</h2>
+    <p><strong>Idiomas:</strong> Español (nativo) · Inglés B2 funcional · Français B1 (Cert. Université de Pau et des Pays de l'Adour)</p>
+    <p><strong>Programación:</strong> Python · TypeScript/JavaScript · Java · C · Agentes IA</p>
+    <p><strong>Plataformas:</strong> Zoho ERP · Supabase · Chatwoot · Poe (Quora) · Linux/macOS</p>
+    <p><strong>Ciencias:</strong> LaTeX · Difractometría de rayos X · Seguridad radiológica · Sistemas complejos</p>
+  </div>
+
+</div><!-- /print-cv -->
 <!-- Este canvas es tanto el loader como el logo permanente -->
 <canvas id="fractal-logo"></canvas>
 
@@ -1126,8 +1296,8 @@ body {
         <div class="skill-label">Idiomas</div>
         <ul class="skill-items">
           <li>Español — nativo</li>
-          <li>Inglés — Intermedio</li>
-          <li>Francés — B1</li>
+          <li>Inglés — B2 funcional (sin certificado)</li>
+          <li>Français — B1 · Cert. Univ. de Pau</li>
         </ul>
       </div>
       <div class="skill-block">
@@ -1183,7 +1353,8 @@ body {
 
     <div class="contact-links" data-scroll="from-center" data-delay="2">
       <a class="contact-link" href="mailto:cluciani@gmail.com">✉ cluciani@gmail.com</a>
-      <a class="contact-link" href="tel:+50766510074">☎ (+507) 6651-0074</a>
+      <a class="contact-link" href="tel:+50766510074">☎ Panamá (+507) 6651-0074</a>
+      <a class="contact-link" href="https://wa.me/593993716335" target="_blank">💬 WhatsApp (+593) 99 371 6335</a>
       <a class="contact-link" href="https://www.linkedin.com/in/christian-luciani" target="_blank">↗ LinkedIn</a>
       <a class="contact-link" href="https://www.researchgate.net/profile/Christian-Luciani" target="_blank">↗ ResearchGate</a>
       <a class="contact-link" href="https://x.com/cluciani_ve" target="_blank">↗ X @cluciani_ve</a>
@@ -1201,11 +1372,21 @@ body {
   JAVASCRIPT
 ════════════════════════════════════════════════════ -->
 <script>
-'use strict';
-
 /* ──────────────────────────────────────────────
-   CURSOR PERSONALIZADO
+   DESCARGA CV PLANO — abre diálogo de impresión/PDF
+   El div #print-cv se muestra solo en modo print.
+   El usuario elige "Guardar como PDF" en el diálogo.
 ────────────────────────────────────────────── */
+function printCV() {
+  document.getElementById('print-cv').style.display = 'block';
+  window.print();
+  // Volver a ocultar después de imprimir
+  window.addEventListener('afterprint', () => {
+    document.getElementById('print-cv').style.display = 'none';
+  }, { once: true });
+}
+
+
 const cur  = document.getElementById('cursor');
 const ring = document.getElementById('cursorRing');
 let mx = 0, my = 0, rx = 0, ry = 0;
