@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Christian Luciani — Museo de una Trayectoria</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Fira+Code:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --night: #050810;
+  --deep: #0b1120;
+  --surface: #111827;
+  --teal: #00c9c0;
+  --gold: #c9a84c;
+  --text: #d6dde8;
+  --muted: #6b7a8d;
+  --border: rgba(0,201,192,0.15);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body {
+  background:var(--night); color:var(--text);
+  font-family:'Cormorant Garamond',serif; font-size:18px;
+  line-height:1.7; overflow-x:hidden; cursor:none;
+}
+
+/* CURSOR */
+.cursor { position:fixed;width:9px;height:9px;background:var(--teal);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);mix-blend-mode:screen;transition:background .3s; }
+.cursor-ring { position:fixed;width:36px;height:36px;border:1px solid var(--teal);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);opacity:.5;transition:width .3s,height .3s; }
+
+/* PROGRESS */
+#progress { position:fixed;top:0;left:0;height:2px;background:var(--teal);z-index:200;box-shadow:0 0 8px var(--teal);transition:width .05s; }
+
+/* LOADER */
+#loader { position:fixed;inset:0;background:var(--night);z-index:1000;display:flex;align-items:center;justify-content:center;flex-direction:column;transition:opacity .8s,visibility .8s; }
+#loader.hidden { opacity:0;visibility:hidden; }
+.loader-text { font-family:'Fira Code',monospace;font-size:.7rem;color:var(--teal);letter-spacing:.4em;margin-top:1.5rem;animation:fadeUp .5s .6s both; }
+.penrose-svg { animation:spin 5s linear infinite; }
+@keyframes spin { to { transform:rotate(360deg); } }
+@keyframes fadeUp { from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)} }
+
+/* NAV */
+#nav { position:fixed;top:0;right:0;width:56px;height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.4rem;z-index:100; }
+.nav-dot { width:5px;height:5px;border-radius:50%;background:var(--muted);cursor:pointer;transition:all .3s;position:relative; }
+.nav-dot.active { background:var(--teal);transform:scale(1.8); }
+.nav-dot::after { content:attr(data-label);position:absolute;right:18px;font-family:'Fira Code',monospace;font-size:.58rem;color:var(--teal);white-space:nowrap;opacity:0;transition:opacity .3s;pointer-events:none; }
+.nav-dot:hover::after { opacity:1; }
+
+/* ═══════════════════════════════════════════════
+   SCROLL ANIMATION ENGINE
+═══════════════════════════════════════════════ */
+
+/* Base: everything starts invisible */
+[data-scroll] {
+  will-change: transform, opacity;
+  transition: opacity .9s cubic-bezier(.16,1,.3,1),
+              transform .9s cubic-bezier(.16,1,.3,1);
+}
+
+/* zoom-in: scale up from small */
+[data-scroll="zoom-in"] {
+  opacity:0; transform:scale(0.78);
+}
+[data-scroll="zoom-in"].in-view {
+  opacity:1; transform:scale(1);
+}
+/* zoom-out: scale down from big */
+[data-scroll="zoom-out"] {
+  opacity:0; transform:scale(1.22);
+}
+[data-scroll="zoom-out"].in-view {
+  opacity:1; transform:scale(1);
+}
+/* from-left */
+[data-scroll="from-left"] {
+  opacity:0; transform:translateX(-80px) scale(.95);
+}
+[data-scroll="from-left"].in-view {
+  opacity:1; transform:translateX(0) scale(1);
+}
+/* from-right */
+[data-scroll="from-right"] {
+  opacity:0; transform:translateX(80px) scale(.95);
+}
+[data-scroll="from-right"].in-view {
+  opacity:1; transform:translateX(0) scale(1);
+}
+/* from-center (explode outward – starts tiny, grows) */
+[data-scroll="from-center"] {
+  opacity:0; transform:scale(0.4) translateY(20px);
+}
+[data-scroll="from-center"].in-view {
+  opacity:1; transform:scale(1) translateY(0);
+}
+/* up */
+[data-scroll="up"] {
+  opacity:0; transform:translateY(60px);
+}
+[data-scroll="up"].in-view {
+  opacity:1; transform:translateY(0);
+}
+/* exit animations when scrolling past (out-view) */
+[data-scroll].out-view-up {
+  opacity:0; transform:translateY(-50px) scale(.97) !important;
+  transition-duration:.6s;
+}
+[data-scroll].out-view-down {
+  opacity:0; transform:translateY(50px) scale(.97) !important;
+  transition-duration:.6s;
+}
+
+/* Stagger delays via data-delay */
+[data-delay="1"] { transition-delay:.1s; }
+[data-delay="2"] { transition-delay:.2s; }
+[data-delay="3"] { transition-delay:.3s; }
+[data-delay="4"] { transition-delay:.4s; }
+[data-delay="5"] { transition-delay:.5s; }
+[data-delay="6"] { transition-delay:.6s; }
+
+/* ═══════════════════════════════════════════
+   SECTION ZOOM-SCALE PARALLAX
+   Each room scales slightly as you scroll through
+═══════════════════════════════════════════ */
+.room-inner-scale {
+  will-change: transform;
+  transition: transform .05s linear;
+}
+
+/* HERO */
+#hero {
+  position:relative; min-height:100vh;
+  display:flex; align-items:center;
+  overflow:hidden; padding:0 8vw;
+}
+#hero-canvas { position:absolute;inset:0;opacity:.35; }
+.hero-content { position:relative;z-index:2;max-width:860px; }
+.hero-label { font-family:'Fira Code',monospace;font-size:.68rem;color:var(--teal);letter-spacing:.45em;text-transform:uppercase;margin-bottom:1.5rem;opacity:0;animation:fadeUp .8s 1.3s both; }
+.hero-name { font-family:'Playfair Display',serif;font-size:clamp(3.2rem,8.5vw,7.5rem);font-weight:900;line-height:.93;color:#fff;margin-bottom:1.5rem;opacity:0;animation:fadeUp .8s 1.5s both; }
+.hero-name span { display:block;color:var(--teal);font-style:italic;font-weight:400; }
+.hero-tagline { font-size:1.15rem;color:var(--muted);font-style:italic;max-width:480px;opacity:0;animation:fadeUp .8s 1.7s both; }
+.hero-scroll { position:absolute;bottom:3rem;left:8vw;font-family:'Fira Code',monospace;font-size:.6rem;color:var(--muted);letter-spacing:.35em;display:flex;align-items:center;gap:1rem;opacity:0;animation:fadeUp 1s 2.3s both; }
+.hero-scroll::before { content:'';display:block;width:36px;height:1px;background:var(--muted); }
+.scroll-line { position:absolute;bottom:3rem;right:8vw;width:1px;height:80px;background:linear-gradient(to bottom,var(--teal),transparent);opacity:0;animation:fadeUp 1s 2.3s both; }
+
+/* ROOMS */
+.room { position:relative;min-height:100vh;padding:10vh 8vw;overflow:hidden; }
+.room-number { font-family:'Fira Code',monospace;font-size:.62rem;color:var(--teal);letter-spacing:.45em;margin-bottom:.5rem;opacity:.7; }
+.room-title { font-family:'Playfair Display',serif;font-size:clamp(2.4rem,5vw,4.8rem);font-weight:700;color:#fff;line-height:.98;margin-bottom:.5rem; }
+.room-title em { color:var(--teal);font-style:italic;font-weight:400; }
+.room-subtitle { font-family:'Fira Code',monospace;font-size:.66rem;color:var(--muted);letter-spacing:.28em;margin-bottom:3.5rem;padding-bottom:1.5rem;border-bottom:1px solid var(--border); }
+.room-canvas { position:absolute;inset:0;pointer-events:none;z-index:0; }
+.room-content { position:relative;z-index:1; }
+.room-divider { height:1px;background:linear-gradient(to right,transparent,var(--teal),transparent); }
+
+/* ENTRIES */
+.entry { border-left:1px solid var(--border);padding-left:2rem;margin-bottom:3.2rem;position:relative;transition:border-color .3s; }
+.entry::before { content:'';position:absolute;left:-4px;top:8px;width:7px;height:7px;border-radius:50%;background:var(--surface);border:1px solid var(--teal);transition:background .3s,transform .3s; }
+.entry:hover { border-color:var(--teal); }
+.entry:hover::before { background:var(--teal);transform:scale(1.5); }
+.entry-period { font-family:'Fira Code',monospace;font-size:.62rem;color:var(--teal);letter-spacing:.2em;margin-bottom:.35rem; }
+.entry-title { font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;color:#fff;margin-bottom:.3rem; }
+.entry-org { font-family:'Fira Code',monospace;font-size:.67rem;color:var(--muted);margin-bottom:.9rem; }
+.entry-body { font-size:.98rem;color:var(--text);line-height:1.8; }
+.entry-body li { list-style:none;padding-left:1.2rem;margin-bottom:.35rem;position:relative; }
+.entry-body li::before { content:'–';position:absolute;left:0;color:var(--teal); }
+
+/* DRAHMA GRID */
+.drahma-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);margin:2.5rem 0; }
+.drahma-cell { background:var(--deep);padding:2rem 1.5rem;transition:background .4s;position:relative;overflow:hidden; }
+.drahma-cell::after { content:'';position:absolute;bottom:0;left:0;width:0;height:2px;background:var(--teal);transition:width .4s; }
+.drahma-cell:hover { background:rgba(0,201,192,.06); }
+.drahma-cell:hover::after { width:100%; }
+.drahma-cell-icon { font-size:1.7rem;margin-bottom:.9rem; }
+.drahma-cell-label { font-family:'Fira Code',monospace;font-size:.58rem;color:var(--teal);letter-spacing:.3em;text-transform:uppercase;margin-bottom:.5rem; }
+.drahma-cell-text { font-size:.93rem;color:var(--text);line-height:1.7; }
+
+/* ILLUSION FRAMES */
+.illusion-frame {
+  position:relative;
+  border:1px solid var(--border);
+  overflow:hidden;
+  background:rgba(0,0,0,.4);
+}
+.illusion-frame img {
+  width:100%; height:100%;
+  object-fit:cover;
+  display:block;
+  filter:brightness(.85) saturate(0.7) hue-rotate(160deg);
+  mix-blend-mode:screen;
+  opacity:.7;
+}
+.illusion-placeholder {
+  width:100%; height:100%;
+  display:flex; align-items:center; justify-content:center;
+  flex-direction:column; gap:1rem;
+  background: repeating-linear-gradient(
+    45deg,
+    rgba(0,201,192,.03),
+    rgba(0,201,192,.03) 1px,
+    transparent 1px,
+    transparent 12px
+  );
+}
+.illusion-placeholder-text {
+  font-family:'Fira Code',monospace;
+  font-size:.6rem; color:var(--muted);
+  letter-spacing:.2em; text-align:center;
+  padding:1rem;
+}
+.illusion-label {
+  position:absolute; bottom:.8rem; right:1rem;
+  font-family:'Fira Code',monospace;
+  font-size:.55rem; color:var(--teal);
+  letter-spacing:.2em; opacity:.6;
+}
+
+/* PROFILE GRID */
+.profile-grid { display:grid;grid-template-columns:1fr 1.6fr;gap:5rem;align-items:start;margin-top:2rem; }
+.profile-aside { position:sticky;top:20vh; }
+.profile-card { background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:2px;padding:2.5rem;position:relative;overflow:hidden; }
+.profile-card::before { content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:var(--teal); }
+.profile-text { font-size:1.05rem;line-height:1.9;color:var(--text); }
+
+/* PUBLICATIONS */
+.pub-item { padding:1.6rem 0;border-bottom:1px solid var(--border);display:grid;grid-template-columns:72px 1fr;gap:2rem;align-items:start;transition:all .3s; }
+.pub-item:hover { padding-left:.8rem;margin-left:-.8rem;background:rgba(0,201,192,.03); }
+.pub-year { font-family:'Fira Code',monospace;font-size:.62rem;color:var(--teal);letter-spacing:.15em;padding-top:3px; }
+.pub-title { font-size:.98rem;color:var(--text);margin-bottom:.25rem; }
+.pub-journal { font-family:'Fira Code',monospace;font-size:.62rem;color:var(--muted); }
+.pub-doi { font-family:'Fira Code',monospace;font-size:.58rem;color:var(--teal);text-decoration:none;display:inline-block;margin-top:.25rem; }
+.pub-doi:hover { text-decoration:underline; }
+
+/* SKILLS */
+.skills-grid { display:grid;grid-template-columns:repeat(4,1fr);gap:2px;background:rgba(255,255,255,.04);margin:2.5rem 0; }
+.skill-block { background:var(--night);padding:2rem 1.5rem;transition:all .4s; }
+.skill-block:hover { background:rgba(0,201,192,.08);transform:translateY(-3px); }
+.skill-label { font-family:'Fira Code',monospace;font-size:.58rem;color:var(--teal);letter-spacing:.3em;text-transform:uppercase;margin-bottom:1rem; }
+.skill-items { list-style:none; }
+.skill-items li { font-size:.88rem;color:var(--muted);padding:.28rem 0;border-bottom:1px solid rgba(255,255,255,.04);transition:color .2s; }
+.skill-block:hover .skill-items li { color:var(--text); }
+
+/* CONTACT */
+.contact-links { display:flex;flex-wrap:wrap;gap:1rem;margin-top:2.5rem; }
+.contact-link { font-family:'Fira Code',monospace;font-size:.72rem;color:var(--muted);text-decoration:none;padding:.7rem 1.5rem;border:1px solid var(--border);letter-spacing:.18em;transition:all .3s; }
+.contact-link:hover { color:var(--teal);border-color:var(--teal);background:rgba(0,201,192,.05); }
+
+/* QUOTE */
+.quote-block { border-left:2px solid var(--teal);padding:1rem 2rem;margin:2.5rem 0;font-style:italic;font-size:1.15rem;color:rgba(214,221,232,.7); }
+
+/* TIMELINE NOTE */
+.timeline-note { background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.3);border-radius:2px;padding:1.5rem 2rem;margin:2rem 0;font-style:italic;color:var(--gold);font-size:.97rem; }
+.timeline-note strong { font-style:normal;font-family:'Fira Code',monospace;font-size:.7rem;letter-spacing:.2em;display:block;margin-bottom:.4rem;opacity:.8; }
+
+.hl { color:var(--teal); }
+.hl-gold { color:var(--gold); }
+
+@media (max-width:900px) {
+  .profile-grid,.drahma-grid { grid-template-columns:1fr; }
+  .skills-grid { grid-template-columns:repeat(2,1fr); }
+  #nav { display:none; }
+  .two-col { grid-template-columns:1fr !important; }
+}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+<div id="progress"></div>
+
+<!-- NAV -->
+<nav id="nav">
+  <div class="nav-dot" data-target="hero" data-label="Entrada"></div>
+  <div class="nav-dot" data-target="room-perfil" data-label="Perfil"></div>
+  <div class="nav-dot" data-target="room-drahma" data-label="Drahma"></div>
+  <div class="nav-dot" data-target="room-experiencia" data-label="Experiencia"></div>
+  <div class="nav-dot" data-target="room-fisica" data-label="Física"></div>
+  <div class="nav-dot" data-target="room-competencias" data-label="Competencias"></div>
+  <div class="nav-dot" data-target="room-contacto" data-label="Contacto"></div>
+</nav>
+
+<!-- LOADER -->
+<div id="loader">
+  <svg class="penrose-svg" width="110" height="110" viewBox="0 0 200 200" fill="none">
+    <defs>
+      <linearGradient id="pg" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#00c9c0"/>
+        <stop offset="100%" stop-color="#c9a84c"/>
+      </linearGradient>
+    </defs>
+    <polygon points="100,30 170,155 30,155" fill="none" stroke="url(#pg)" stroke-width="14" stroke-linejoin="round"/>
+    <polygon points="100,55 145,140 55,140" fill="#050810"/>
+    <line x1="30" y1="155" x2="65" y2="155" stroke="#00c9c0" stroke-width="14"/>
+    <line x1="85" y1="155" x2="170" y2="155" stroke="#c9a84c" stroke-width="14"/>
+  </svg>
+  <div class="loader-text">ABRIENDO EXPOSICIÓN</div>
+</div>
+
+<!-- ══ HERO ══════════════════════════════ -->
+<section id="hero">
+  <canvas id="hero-canvas"></canvas>
+  <div class="hero-content">
+    <div class="hero-label">Museo de una Trayectoria · 2026</div>
+    <h1 class="hero-name">
+      Christian<br><span>Luciani</span>Toledo
+    </h1>
+    <p class="hero-tagline">Físico · Comunicador de Ciencias · Innovación Educativa</p>
+  </div>
+  <div class="hero-scroll">SCROLL PARA RECORRER</div>
+  <div class="scroll-line"></div>
+</section>
+<div class="room-divider"></div>
+
+<!-- ══ SALA 01: PERFIL ══════════════════ -->
+<section class="room" id="room-perfil" style="background:var(--deep)">
+  <canvas class="room-canvas" id="c-perfil"></canvas>
+  <div class="room-content">
+    <div class="room-number" data-scroll="up">SALA 01</div>
+    <h2 class="room-title" data-scroll="zoom-in">El <em>Visitante</em></h2>
+    <div class="room-subtitle" data-scroll="up" data-delay="1">PERFIL PROFESIONAL · PANAMÁ / QUITO</div>
+
+    <div class="profile-grid">
+      <div class="profile-aside">
+        <div class="profile-card" data-scroll="from-left">
+          <p class="profile-text">Físico con candidatura doctoral en sistemas complejos y más de 20 años navegando entre la investigación científica, la docencia universitaria y la innovación educativa.</p>
+          <br>
+          <p class="profile-text" style="color:var(--muted);font-size:.95rem">En 2024 diseñé e implementé <span class="hl">Drahma</span>: 36 tutores virtuales con IA y pedagogía socrática, alineados al currículo ecuatoriano, probados en campo con comunidades indígenas amazónicas.</p>
+          <br>
+          <p class="profile-text" style="color:var(--muted);font-size:.95rem">Bilingüe español/inglés. Redes activas en Panamá y Ecuador.</p>
+        </div>
+
+        <!-- ILLUSION FRAME 01 -->
+        <!-- 
+          ╔══════════════════════════════════════════════════════╗
+          ║  INSTRUCCIÓN PARA GENERAR ESTA IMAGEN                ║
+          ║                                                       ║
+          ║  Abre una nueva conversación con Claude y pide:       ║
+          ║                                                       ║
+          ║  "Genera una imagen SVG de un cubo de Necker          ║
+          ║   con líneas en color #00c9c0 sobre fondo #050810.    ║
+          ║   El cubo debe tener ambigüedad perceptual perfecta   ║
+          ║   (puede verse de dos orientaciones distintas).       ║
+          ║   Tamaño: 300x300px. Solo SVG, sin fondo blanco."     ║
+          ║                                                       ║
+          ║  Luego reemplaza illusion-placeholder con:            ║
+          ║  <img src="necker-cube.svg" alt="Cubo de Necker">     ║
+          ╚══════════════════════════════════════════════════════╝
+        -->
+        <div class="illusion-frame" style="height:260px;margin-top:2.5rem;" data-scroll="zoom-in" data-delay="2">
+          <canvas id="c-necker" style="width:100%;height:100%;"></canvas>
+          <div class="illusion-label">CUBO DE NECKER · 1832</div>
+        </div>
+      </div>
+
+      <div>
+        <div class="entry" data-scroll="from-right">
+          <div class="entry-period">1997 – 2003</div>
+          <div class="entry-title">Licenciatura en Física</div>
+          <div class="entry-org">Universidad Central de Venezuela · Tesis: Modelos Cosmológicos N-Dimensionales</div>
+        </div>
+        <div class="entry" data-scroll="from-right" data-delay="1">
+          <div class="entry-period">2003 – 2006</div>
+          <div class="entry-title">Candidatura Doctoral — Sistemas Complejos</div>
+          <div class="entry-org">Universidad Simón Bolívar, Venezuela · ABD (tesis pendiente)</div>
+        </div>
+        <div class="entry" data-scroll="from-right" data-delay="2">
+          <div class="entry-period">2006 – 2008</div>
+          <div class="entry-title">Especialización en Audiovisuales</div>
+          <div class="entry-org">Escuela de Cine y TV, Caracas · Prix du Public FECOVEN 2008</div>
+        </div>
+        <div class="quote-block" data-scroll="zoom-in" data-delay="3">
+          La física me enseñó a ver patrones donde otros ven ruido.<br>
+          El cine me enseñó a hacer ese patrón visible para otros.
+        </div>
+        <div class="entry" data-scroll="from-right" data-delay="3">
+          <div class="entry-period">2003 · CERN · BECA</div>
+          <div class="entry-title">II Latin American School of High Energy Physics</div>
+          <div class="entry-org">San Miguel Regla, México</div>
+        </div>
+        <div class="entry" data-scroll="from-right" data-delay="4">
+          <div class="entry-period">2004</div>
+          <div class="entry-title">I Taller Andino de Caos y Complejidad</div>
+          <div class="entry-org">UNET, San Cristóbal, Venezuela</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="room-divider"></div>
+
+<!-- ══ SALA 02: DRAHMA ══════════════════ -->
+<section class="room" id="room-drahma" style="background:#080d18">
+  <canvas class="room-canvas" id="c-drahma"></canvas>
+  <div class="room-content">
+    <div class="room-number" data-scroll="up">SALA 02</div>
+    <h2 class="room-title" data-scroll="zoom-out">Proyecto <em>Drahma</em></h2>
+    <div class="room-subtitle" data-scroll="up" data-delay="1">IA EDUCATIVA · ECUADOR · AGOSTO 2024</div>
+
+    <div style="display:grid;grid-template-columns:1.2fr 1fr;gap:4rem;align-items:start;" class="two-col">
+      <div>
+        <div class="timeline-note" data-scroll="from-left">
+          <strong>LÍNEA TEMPORAL</strong>
+          Agosto 2024 — aproximadamente dos meses antes de la disponibilidad pública de Khanmigo. Desplegado sin financiamiento externo ni lanzamiento público. Probado con comunidades indígenas del Amazonas ecuatoriano.
+        </div>
+
+        <div class="drahma-grid">
+          <div class="drahma-cell" data-scroll="from-center" data-delay="1">
+            <div class="drahma-cell-icon">🐉</div>
+            <div class="drahma-cell-label">Diseño</div>
+            <div class="drahma-cell-text">Dragones alados con iconografía precolombina y amazónica. Culturalmente resonantes para el estudiante ecuatoriano.</div>
+          </div>
+          <div class="drahma-cell" data-scroll="from-center" data-delay="2">
+            <div class="drahma-cell-icon">🧠</div>
+            <div class="drahma-cell-label">Pedagogía</div>
+            <div class="drahma-cell-text">Método socrático aplicado: guía al estudiante hacia el razonamiento propio. No entrega respuestas — construye preguntas.</div>
+          </div>
+          <div class="drahma-cell" data-scroll="from-center" data-delay="3">
+            <div class="drahma-cell-icon">📚</div>
+            <div class="drahma-cell-label">Alcance</div>
+            <div class="drahma-cell-text">36 asignaturas del currículo oficial del Ministerio de Educación del Ecuador — primaria y secundaria.</div>
+          </div>
+          <div class="drahma-cell" data-scroll="from-center" data-delay="2">
+            <div class="drahma-cell-icon">⚙️</div>
+            <div class="drahma-cell-label">Arquitectura</div>
+            <div class="drahma-cell-text">Poe (Quora): agnóstico del modelo, acceso gratuito, persistencia de memoria conversacional entre sesiones.</div>
+          </div>
+          <div class="drahma-cell" data-scroll="from-center" data-delay="3">
+            <div class="drahma-cell-icon">🛡️</div>
+            <div class="drahma-cell-label">Seguridad</div>
+            <div class="drahma-cell-text">Guardrails personalizados para menores. Un problema de alineación que el campo aún estaba formalizando.</div>
+          </div>
+          <div class="drahma-cell" data-scroll="from-center" data-delay="4">
+            <div class="drahma-cell-icon">🌿</div>
+            <div class="drahma-cell-label">Campo</div>
+            <div class="drahma-cell-text">Pilotado con comunidades indígenas amazónicas. Validado en condiciones reales de bajo recurso tecnológico.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ILLUSION FRAME 02: Escher staircase canvas -->
+      <!--
+        ╔══════════════════════════════════════════════════════╗
+        ║  INSTRUCCIÓN PARA GENERAR ESTA IMAGEN                ║
+        ║                                                       ║
+        ║  En nueva conversación con Claude pide:               ║
+        ║                                                       ║
+        ║  "Crea una imagen SVG de la Escalera Infinita de      ║
+        ║   Penrose (Penrose Stairs) vista en perspectiva       ║
+        ║   isométrica. Líneas en color #00c9c0 y #c9a84c       ║
+        ║   sobre fondo transparente. 400x500px.                ║
+        ║   Los peldaños deben parecer subir infinitamente      ║
+        ║   formando un bucle cerrado imposible."               ║
+        ║                                                       ║
+        ║  Guarda como penrose-stairs.svg y reemplaza           ║
+        ║  el canvas id="c-stairs" por:                         ║
+        ║  <img src="penrose-stairs.svg">                       ║
+        ╚══════════════════════════════════════════════════════╝
+      -->
+      <div data-scroll="from-right" style="position:sticky;top:15vh;">
+        <div class="illusion-frame" style="height:480px;">
+          <canvas id="c-stairs" style="width:100%;height:100%;"></canvas>
+          <div class="illusion-label">ESCALERA DE PENROSE · 1958</div>
+        </div>
+
+        <!-- STEM Lab -->
+        <div style="margin-top:2rem;border:1px solid var(--border);padding:1.8rem;" data-scroll="up" data-delay="2">
+          <div style="font-family:'Fira Code',monospace;font-size:.58rem;color:var(--teal);letter-spacing:.3em;margin-bottom:.8rem;">SALA 02-B · LABORATORIO STEM</div>
+          <div style="font-family:'Playfair Display',serif;font-size:1.3rem;color:#fff;margin-bottom:.8rem;">Fabricación <em style="color:var(--teal)">Pedagógica</em></div>
+          <ul class="entry-body">
+            <li>Impresora 3D y cortadora láser · producción de juguetes pedagógicos concretos</li>
+            <li>Modelo peer-to-peer: estudiantes avanzados crean para estudiantes menores</li>
+            <li>Visión en pausa: chatbots como manuales vivos para cada objeto físico</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="room-divider"></div>
+
+<!-- ══ SALA 03: EXPERIENCIA ═════════════ -->
+<section class="room" id="room-experiencia" style="background:var(--night)">
+  <canvas class="room-canvas" id="c-exp"></canvas>
+  <div class="room-content">
+    <div class="room-number" data-scroll="up">SALA 03</div>
+    <h2 class="room-title" data-scroll="zoom-in">La <em>Trayectoria</em></h2>
+    <div class="room-subtitle" data-scroll="up" data-delay="1">EXPERIENCIA PROFESIONAL · 2003 – PRESENTE</div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:4rem;" class="two-col">
+      <div>
+        <div class="entry" data-scroll="from-left">
+          <div class="entry-period">2025 – PRESENTE</div>
+          <div class="entry-title">Consultor Estratégico de Sistemas</div>
+          <div class="entry-org">Independiente · Panamá / Ecuador</div>
+          <ul class="entry-body">
+            <li>Plataformas BI e infraestructura digital · Zoho ERP</li>
+            <li>Sistema de auditoría y registro de efectivo para casino tipo C</li>
+            <li>Arquitectura SaaS para gestión clínica</li>
+          </ul>
+        </div>
+        <div class="entry" data-scroll="from-left" data-delay="1">
+          <div class="entry-period">2019 – 2024</div>
+          <div class="entry-title">Coordinador de Laboratorios de Física</div>
+          <div class="entry-org">USFQ · Quito, Ecuador</div>
+          <ul class="entry-body">
+            <li>800+ estudiantes anuales · 36 guías de laboratorio originales</li>
+            <li>Casa Abierta: desarrollo de experimentos para público general</li>
+            <li>Técnico-operador de difractómetro de rayos X</li>
+            <li>Responsable de Seguridad Radiológica institucional</li>
+          </ul>
+        </div>
+        <div class="entry" data-scroll="from-left" data-delay="2">
+          <div class="entry-period">2016 – 2018</div>
+          <div class="entry-title">Diseñador de Sistemas / Luminotécnico</div>
+          <div class="entry-org">Grupo Angel / Fluge-Panamá</div>
+          <ul class="entry-body">
+            <li>Sistema de registro de cuentas y bóveda para casinos</li>
+            <li>Luminotécnico freelance para eventos corporativos</li>
+          </ul>
+        </div>
+      </div>
+      <div>
+        <div class="entry" data-scroll="from-right">
+          <div class="entry-period">2010 – 2013</div>
+          <div class="entry-title">Logística BTL y Relación con Clientes</div>
+          <div class="entry-org">Magic Dreams Productions · Panamá</div>
+          <ul class="entry-body">
+            <li>Logística y montaje de activaciones BTL en eventos masivos</li>
+            <li>Copa Airlines, Visa, ALTA, Cervecería Nacional, Herbalife</li>
+            <li>Coordinación de 1.000 pax · Desfile de Navidad 2013</li>
+            <li>Cirque du Soleil, Shakira, Juan Luis Guerra, Jennifer Lopez, Yanni</li>
+          </ul>
+        </div>
+        <div class="entry" data-scroll="from-right" data-delay="1">
+          <div class="entry-period">2006 – 2010</div>
+          <div class="entry-title">Fotografía · Edición · Docencia</div>
+          <div class="entry-org">Escuela de Cine y TV / Venezuela</div>
+          <ul class="entry-body">
+            <li><em>La Escalera de Patty</em> — prix du public, FECOVEN 2008</li>
+            <li><em>9 Arepas</em> — selección ESPN 2008</li>
+            <li>Docente de edición y montaje</li>
+          </ul>
+        </div>
+        <div class="entry" data-scroll="from-right" data-delay="2">
+          <div class="entry-period">2003 – 2006</div>
+          <div class="entry-title">Profesor de Física</div>
+          <div class="entry-org">Universidad Simón Bolívar · Caracas</div>
+          <ul class="entry-body">
+            <li>Laboratorios I, II y III para ingenierías y ciencias</li>
+            <li>Investigación doctoral en sistemas complejos</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="room-divider"></div>
+
+<!-- ══ SALA 04: FÍSICA ══════════════════ -->
+<section class="room" id="room-fisica" style="background:var(--deep)">
+  <canvas class="room-canvas" id="c-fisica"></canvas>
+  <div class="room-content">
+    <div class="room-number" data-scroll="up">SALA 04</div>
+    <h2 class="room-title" data-scroll="zoom-out"><em>Registro</em> Científico</h2>
+    <div class="room-subtitle" data-scroll="up" data-delay="1">PUBLICACIONES ARBITRADAS · 2006 – 2025</div>
+
+    <div style="display:grid;grid-template-columns:1fr 300px;gap:4rem;align-items:start;" class="two-col">
+      <div>
+        <!-- ILLUSION FRAME 03 inline -->
+        <!--
+          ╔══════════════════════════════════════════════════════╗
+          ║  INSTRUCCIÓN PARA GENERAR ESTA IMAGEN                ║
+          ║                                                       ║
+          ║  En nueva conversación con Claude pide:               ║
+          ║                                                       ║
+          ║  "Crea un SVG de la ilusión óptica 'Rotating Snakes' ║
+          ║   (Kitaoka 2003): anillos concéntricos de segmentos   ║
+          ║   con gradiente blanco-negro alternado que producen   ║
+          ║   sensación de rotación al mirar la imagen.           ║
+          ║   Paleta de colores: #00c9c0 y #c9a84c sobre #050810. ║
+          ║   400x400px. Solo SVG."                               ║
+          ║                                                       ║
+          ║  Guarda como rotating-snakes.svg y reemplaza el       ║
+          ║  canvas id="c-snakes" por:                            ║
+          ║  <img src="rotating-snakes.svg">                      ║
+          ╚══════════════════════════════════════════════════════╝
+        -->
+        <div class="illusion-frame" style="height:280px;margin-bottom:2.5rem;" data-scroll="zoom-in">
+          <canvas id="c-snakes" style="width:100%;height:100%;"></canvas>
+          <div class="illusion-label">SERPIENTES ROTANTES · KITAOKA 2003</div>
+        </div>
+
+        <div data-scroll="from-left">
+          <div class="pub-item">
+            <div class="pub-year">2025</div>
+            <div><div class="pub-title">Highly efficient caffeine-based PVA composite film for UV shielding</div><div class="pub-journal">Trujillo Galarza et al. · Carbon Trends · Vol. 20</div><a class="pub-doi" href="https://doi.org/10.1016/j.cartre.2025.100502" target="_blank">↗ DOI</a></div>
+          </div>
+          <div class="pub-item">
+            <div class="pub-year">2025</div>
+            <div><div class="pub-title">Tunable Dielectric Carbon Materials from Hydrothermally Nanostructured Organic Carbon Sources</div><div class="pub-journal">Landázuri et al. · ChemPhysChem · 26</div><a class="pub-doi" href="https://doi.org/10.1002/cphc.202400711" target="_blank">↗ DOI</a></div>
+          </div>
+          <div class="pub-item">
+            <div class="pub-year">2023</div>
+            <div><div class="pub-title">Optimization of microfibrillated cellulose isolation from cocoa pod husk</div><div class="pub-journal">Zambrano et al. · Heliyon · 9</div><a class="pub-doi" href="https://doi.org/10.1016/j.heliyon.2023.e17258" target="_blank">↗ DOI</a></div>
+          </div>
+          <div class="pub-item">
+            <div class="pub-year">2023</div>
+            <div><div class="pub-title">Hydrochars from Lignocellulosic Residues for Green Electronics, Environmental Remediation, Energy and Agricultural Applications</div><div class="pub-journal">Landázuri et al. · ResearchGate preprint</div><a class="pub-doi" href="https://www.researchgate.net/publication/383276828" target="_blank">↗ ResearchGate</a></div>
+          </div>
+          <div class="pub-item">
+            <div class="pub-year">2022</div>
+            <div><div class="pub-title">Optimization of Microcrystalline Cellulose Isolation from Cocoa Pod Husk</div><div class="pub-journal">Zambrano et al. · SSRN Electronic Journal</div><a class="pub-doi" href="https://doi.org/10.2139/ssrn.4307097" target="_blank">↗ DOI</a></div>
+          </div>
+          <div class="pub-item">
+            <div class="pub-year">2006</div>
+            <div><div class="pub-title">Neural control on multiple time scales: Insights from human stick balancing</div><div class="pub-journal">Cabrera, Luciani, Milton · Condensed Matter Physics · Vol. 9</div><a class="pub-doi" href="https://doi.org/10.5488/CMP.9.2.373" target="_blank">↗ DOI</a></div>
+          </div>
+          <div class="pub-item">
+            <div class="pub-year">2006</div>
+            <div><div class="pub-title">Balancing with Noise and Delay</div><div class="pub-journal">Hosaka, Ohira, Luciani, Cabrera, Milton · Progress of Theoretical Physics Supplement · 161</div><a class="pub-doi" href="https://doi.org/10.1143/PTPS.161.314" target="_blank">↗ DOI</a></div>
+          </div>
+          <div class="pub-item">
+            <div class="pub-year">2019–24</div>
+            <div><div class="pub-title">36 guías de prácticas de laboratorio de física</div><div class="pub-journal">USFQ · Ingeniería, Ciencias de la Salud, Ciencias Puras · Publicación institucional</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ILLUSION 04 sidebar -->
+      <!--
+        ╔══════════════════════════════════════════════════════╗
+        ║  INSTRUCCIÓN PARA GENERAR ESTA IMAGEN                ║
+        ║                                                       ║
+        ║  En nueva conversación con Claude pide:               ║
+        ║                                                       ║
+        ║  "Crea una imagen SVG del Triángulo de Penrose        ║
+        ║   (Penrose Triangle / impossible triangle).           ║
+        ║   Vista en perspectiva que hace imposible la forma.   ║
+        ║   Colores: degradado de #00c9c0 a #c9a84c.            ║
+        ║   Fondo transparente. 280x280px."                     ║
+        ║                                                       ║
+        ║  Guarda como penrose-triangle.svg                     ║
+        ╚══════════════════════════════════════════════════════╝
+      -->
+      <div data-scroll="from-right" style="position:sticky;top:15vh;">
+        <div class="illusion-frame" style="height:280px;">
+          <canvas id="c-penrose" style="width:100%;height:100%;"></canvas>
+          <div class="illusion-label">TRIÁNGULO DE PENROSE · 1954</div>
+        </div>
+        <p style="margin-top:1.5rem;font-size:.88rem;color:var(--muted);font-style:italic;line-height:1.8;">
+          "Lo imposible solo lo es hasta que alguien lo dibuja correctamente."
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="room-divider"></div>
+
+<!-- ══ SALA 05: COMPETENCIAS ════════════ -->
+<section class="room" id="room-competencias" style="background:var(--night)">
+  <canvas class="room-canvas" id="c-comp"></canvas>
+  <div class="room-content">
+    <div class="room-number" data-scroll="up">SALA 05</div>
+    <h2 class="room-title" data-scroll="zoom-in">Caja de <em>Herramientas</em></h2>
+    <div class="room-subtitle" data-scroll="up" data-delay="1">COMPETENCIAS TÉCNICAS · IDIOMAS · PLATAFORMAS</div>
+
+    <div class="skills-grid" data-scroll="from-center">
+      <div class="skill-block">
+        <div class="skill-label">Idiomas</div>
+        <ul class="skill-items"><li>Español — nativo</li><li>Inglés — B2 profesional</li><li>Francés — B1</li></ul>
+      </div>
+      <div class="skill-block">
+        <div class="skill-label">Ciencias</div>
+        <ul class="skill-items"><li>LaTeX</li><li>Difractometría de rayos X</li><li>Seguridad radiológica</li><li>Sistemas complejos</li></ul>
+      </div>
+      <div class="skill-block">
+        <div class="skill-label">Programación</div>
+        <ul class="skill-items"><li>Python</li><li>TypeScript / JavaScript</li><li>Java · C</li><li>Agentes IA</li></ul>
+      </div>
+      <div class="skill-block">
+        <div class="skill-label">Plataformas</div>
+        <ul class="skill-items"><li>Zoho ERP · Supabase</li><li>Poe (Quora) · Chatwoot</li><li>Linux / macOS / Windows</li></ul>
+      </div>
+    </div>
+
+    <div style="margin-top:3.5rem;padding-top:2rem;border-top:1px solid var(--border);">
+      <div class="room-number">INTERESES</div>
+      <p data-scroll="zoom-in" style="margin-top:1rem;color:var(--muted);font-style:italic;max-width:700px;font-size:1rem;line-height:2;">
+        Escalada en roca · Montañismo · Cine asiático · Neurociencias ·
+        Consecuencias filosóficas de la IA post-humana · Nutrición · Meditación ·
+        <span class="hl">La naturaleza cognitiva de los seres orgánicos en un mundo de inteligencia artificial.</span>
+      </p>
+    </div>
+  </div>
+</section>
+<div class="room-divider"></div>
+
+<!-- ══ SALA 06: CONTACTO ════════════════ -->
+<section class="room" id="room-contacto" style="background:var(--deep);min-height:55vh;display:flex;align-items:center;">
+  <div class="room-content" style="width:100%;">
+    <div class="room-number" data-scroll="up">SALIDA</div>
+    <h2 class="room-title" data-scroll="zoom-out">Iniciar <em>Conversación</em></h2>
+    <div class="room-subtitle" data-scroll="up" data-delay="1">CONTACTO · REDES · INVESTIGACIÓN</div>
+    <div class="contact-links" data-scroll="from-center" data-delay="2">
+      <a class="contact-link" href="/cdn-cgi/l/email-protection#d4b7b8a1b7bdb5babd94b3b9b5bdb8fab7bbb9">✉ <span class="__cf_email__" data-cfemail="bcdfd0c9dfd5ddd2d5fcdbd1ddd5d092dfd3d1">[email&#160;protected]</span></a>
+      <a class="contact-link" href="tel:+50766510074">☎ (+507) 6651-0074</a>
+      <a class="contact-link" href="https://www.linkedin.com/in/christian-luciani" target="_blank">↗ LinkedIn</a>
+      <a class="contact-link" href="https://www.researchgate.net/profile/Christian-Luciani" target="_blank">↗ ResearchGate</a>
+      <a class="contact-link" href="https://x.com/cluciani_ve" target="_blank">↗ X @cluciani_ve</a>
+    </div>
+    <div style="margin-top:5rem;font-family:'Fira Code',monospace;font-size:.56rem;color:var(--muted);letter-spacing:.3em;" data-scroll="up" data-delay="3">
+      NACIONALIDAD VENEZOLANA · CÉDULA ECUATORIANA 175904419-9 · DISPONIBLE PARA REUBICACIÓN
+    </div>
+  </div>
+</section>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+// ═══════════════════════════════════════════
+// CURSOR
+// ═══════════════════════════════════════════
+const cur = document.getElementById('cursor');
+const ring = document.getElementById('cursorRing');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;});
+(function animC(){
+  cur.style.left=mx+'px'; cur.style.top=my+'px';
+  rx+=(mx-rx)*.1; ry+=(my-ry)*.1;
+  ring.style.left=rx+'px'; ring.style.top=ry+'px';
+  requestAnimationFrame(animC);
+})();
+document.querySelectorAll('a,button,.nav-dot,.drahma-cell,.pub-item,.skill-block,.illusion-frame').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{ring.style.width='58px';ring.style.height='58px';cur.style.background='var(--gold)';});
+  el.addEventListener('mouseleave',()=>{ring.style.width='36px';ring.style.height='36px';cur.style.background='var(--teal)';});
+});
+
+// ═══════════════════════════════════════════
+// LOADER
+// ═══════════════════════════════════════════
+window.addEventListener('load',()=>setTimeout(()=>document.getElementById('loader').classList.add('hidden'),1400));
+
+// ═══════════════════════════════════════════
+// PROGRESS
+// ═══════════════════════════════════════════
+const prog = document.getElementById('progress');
+window.addEventListener('scroll',()=>{
+  const h=document.documentElement.scrollHeight-window.innerHeight;
+  prog.style.width=(window.scrollY/h*100)+'%';
+});
+
+// ═══════════════════════════════════════════
+// SCROLL ANIMATION ENGINE
+// Uses IntersectionObserver + manual scroll tracking
+// ═══════════════════════════════════════════
+const scrollEls = document.querySelectorAll('[data-scroll]');
+// Track which elements have been seen
+const seen = new WeakSet();
+
+const io = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    const el = e.target;
+    if(e.isIntersecting){
+      el.classList.add('in-view');
+      el.classList.remove('out-view-up','out-view-down');
+      seen.add(el);
+    } else if(seen.has(el)){
+      // Determine scroll direction for exit animation
+      const rect = el.getBoundingClientRect();
+      if(rect.top < 0){
+        el.classList.add('out-view-up');
+      } else {
+        el.classList.add('out-view-down');
+      }
+      el.classList.remove('in-view');
+    }
+  });
+},{threshold:0.1});
+
+scrollEls.forEach(el=>io.observe(el));
+
+// ═══════════════════════════════════════════
+// SECTION PARALLAX ZOOM ON SCROLL
+// Rooms gently scale as they pass through viewport
+// ═══════════════════════════════════════════
+const rooms = document.querySelectorAll('.room');
+function updateParallax(){
+  const vh = window.innerHeight;
+  rooms.forEach(room=>{
+    const rect = room.getBoundingClientRect();
+    const center = rect.top + rect.height/2 - vh/2;
+    const progress = center / vh; // -1 (above) to 1 (below)
+    const scale = 1 - Math.abs(progress)*0.04;
+    const ty = progress * 18;
+    room.style.transform = `scale(${Math.max(0.95,scale)}) translateY(${ty}px)`;
+  });
+}
+window.addEventListener('scroll', updateParallax, {passive:true});
+updateParallax();
+
+// ═══════════════════════════════════════════
+// NAV DOTS
+// ═══════════════════════════════════════════
+const sections = ['hero','room-perfil','room-drahma','room-experiencia','room-fisica','room-competencias','room-contacto'];
+const dots = document.querySelectorAll('.nav-dot');
+dots.forEach((d,i)=>d.addEventListener('click',()=>document.getElementById(sections[i]).scrollIntoView({behavior:'smooth'})));
+new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      const idx=sections.indexOf(e.target.id);
+      dots.forEach((d,i)=>d.classList.toggle('active',i===idx));
+    }
+  });
+},{threshold:.4}).observe;
+// simpler approach
+sections.forEach((s,i)=>{
+  const el=document.getElementById(s);
+  if(!el)return;
+  new IntersectionObserver(entries=>{
+    if(entries[0].isIntersecting) dots.forEach((d,j)=>d.classList.toggle('active',j===i));
+  },{threshold:.4}).observe(el);
+});
+
+// ═══════════════════════════════════════════
+// HERO CANVAS: Isometric impossible cubes
+// ═══════════════════════════════════════════
+(()=>{
+  const c=document.getElementById('hero-canvas');
+  const ctx=c.getContext('2d');
+  let W,H,t=0;
+  const resize=()=>{W=c.width=c.offsetWidth;H=c.height=c.offsetHeight;};
+  resize(); window.addEventListener('resize',resize);
+
+  function cube(cx,cy,s,a,ph){
+    const h=s*.866;
+    ctx.globalAlpha=a*(.35+.65*Math.abs(Math.sin(ph+t*.0015)));
+    // top
+    ctx.beginPath(); ctx.moveTo(cx,cy-h*.667);
+    ctx.lineTo(cx+s*.5,cy-h*.333); ctx.lineTo(cx,cy);
+    ctx.lineTo(cx-s*.5,cy-h*.333); ctx.closePath();
+    ctx.strokeStyle='#00c9c0'; ctx.lineWidth=.6; ctx.stroke();
+    // right
+    ctx.beginPath(); ctx.moveTo(cx,cy);
+    ctx.lineTo(cx+s*.5,cy-h*.333); ctx.lineTo(cx+s*.5,cy+h*.333);
+    ctx.lineTo(cx,cy+h*.667); ctx.closePath();
+    ctx.strokeStyle='#c9a84c'; ctx.lineWidth=.6; ctx.stroke();
+    // left
+    ctx.beginPath(); ctx.moveTo(cx,cy);
+    ctx.lineTo(cx-s*.5,cy-h*.333); ctx.lineTo(cx-s*.5,cy+h*.333);
+    ctx.lineTo(cx,cy+h*.667); ctx.closePath();
+    ctx.strokeStyle='rgba(0,201,192,.45)'; ctx.lineWidth=.6; ctx.stroke();
+    ctx.globalAlpha=1;
+  }
+
+  (function draw(){
+    ctx.clearRect(0,0,W,H);
+    const s=50,h=s*.866;
+    const cols=Math.ceil(W/(s*1.5))+2, rows=Math.ceil(H/(h*2))+2;
+    for(let r=-1;r<rows;r++)
+      for(let cc=-1;cc<cols;cc++)
+        cube(cc*s*1.5+(r%2?s*.75:0),r*h,s,.5,(r*cols+cc)*1.9);
+    t++; requestAnimationFrame(draw);
+  })();
+})();
+
+// ═══════════════════════════════════════════
+// NECKER CUBE CANVAS (Sala Perfil)
+// ═══════════════════════════════════════════
+(()=>{
+  const c=document.getElementById('c-necker');
+  if(!c)return;
+  const ctx=c.getContext('2d');
+  let W,H,t=0;
+  const resize=()=>{W=c.width=c.offsetWidth;H=c.height=c.offsetHeight;};
+  resize(); window.addEventListener('resize',resize);
+
+  function drawNecker(cx,cy,s,phase){
+    // Necker cube: draw both interpretations oscillating
+    const f=.5+.5*Math.sin(phase);
+    ctx.clearRect(0,0,W,H);
+    ctx.strokeStyle=`rgba(0,201,192,${.5+f*.3})`;
+    ctx.lineWidth=1.5;
+    const off=s*.4;
+    // Front face
+    ctx.strokeRect(cx-s/2,cy-s/2,s,s);
+    // Back face
+    ctx.strokeRect(cx-s/2+off,cy-s/2-off,s,s);
+    // Connecting lines
+    [[cx-s/2,cy-s/2,cx-s/2+off,cy-s/2-off],
+     [cx+s/2,cy-s/2,cx+s/2+off,cy-s/2-off],
+     [cx+s/2,cy+s/2,cx+s/2+off,cy+s/2-off],
+     [cx-s/2,cy+s/2,cx-s/2+off,cy+s/2-off]].forEach(([x1,y1,x2,y2])=>{
+       ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+    });
+    // Perceptual flip highlight — alternates which face "comes forward"
+    ctx.strokeStyle=`rgba(201,168,76,${.3+f*.4})`;
+    ctx.lineWidth=f*2.5;
+    if(f>0.5){
+      ctx.strokeRect(cx-s/2,cy-s/2,s,s); // front face prominent
+    } else {
+      ctx.strokeRect(cx-s/2+off,cy-s/2-off,s,s); // back face prominent
+    }
+  }
+
+  (function draw(){
+    drawNecker(W/2,H/2,Math.min(W,H)*.45,t*.012);
+    t++; requestAnimationFrame(draw);
+  })();
+})();
+
+// ═══════════════════════════════════════════
+// PENROSE STAIRCASE CANVAS (Sala Drahma)
+// ═══════════════════════════════════════════
+(()=>{
+  const c=document.getElementById('c-stairs');
+  if(!c)return;
+  const ctx=c.getContext('2d');
+  let W,H,t=0;
+  const resize=()=>{W=c.width=c.offsetWidth;H=c.height=c.offsetHeight;};
+  resize(); window.addEventListener('resize',resize);
+
+  function drawPenroseStairs(){
+    ctx.clearRect(0,0,W,H);
+    const cx=W/2, cy=H/2;
+    const n=12, r=Math.min(W,H)*.35;
+    const step=(t*.004)%(Math.PI*2/n);
+
+    for(let i=0;i<n;i++){
+      const a=(i/n)*Math.PI*2+step;
+      const na=((i+1)/n)*Math.PI*2+step;
+      const x1=cx+Math.cos(a)*r, y1=cy+Math.sin(a)*r*.5;
+      const x2=cx+Math.cos(na)*r, y2=cy+Math.sin(na)*r*.5;
+
+      // Height illusion: each step appears higher than previous
+      const rise=(i/n)*30;
+      const col=`hsl(${180+i*8},70%,${30+i*2}%)`;
+      ctx.strokeStyle=col;
+      ctx.lineWidth=12;
+      ctx.beginPath();
+      ctx.moveTo(x1,y1-rise);
+      ctx.lineTo(x2,y2-((i+1)/n)*30);
+      ctx.stroke();
+
+      // Riser
+      ctx.lineWidth=2;
+      ctx.strokeStyle=`rgba(0,201,192,.4)`;
+      ctx.beginPath();
+      ctx.moveTo(x1,y1-rise);
+      ctx.lineTo(x1,y1-((i+0.5)/n)*30-6);
+      ctx.stroke();
+    }
+  }
+
+  (function draw(){
+    drawPenroseStairs();
+    t++; requestAnimationFrame(draw);
+  })();
+})();
+
+// ═══════════════════════════════════════════
+// INTERFERENCE PATTERN (Sala Experiencia)
+// ═══════════════════════════════════════════
+(()=>{
+  const c=document.getElementById('c-exp');
+  if(!c)return;
+  const ctx=c.getContext('2d');
+  let W,H,t=0;
+  const resize=()=>{W=c.width=c.offsetWidth;H=c.height=c.offsetHeight;};
+  resize(); window.addEventListener('resize',resize);
+  (function draw(){
+    ctx.clearRect(0,0,W,H);
+    const s1x=W*.78,s1y=H*.3,s2x=W*.88,s2y=H*.7,step=20;
+    for(let x=0;x<W;x+=step){
+      for(let y=0;y<H;y+=step){
+        const d1=Math.sqrt((x-s1x)**2+(y-s1y)**2);
+        const d2=Math.sqrt((x-s2x)**2+(y-s2y)**2);
+        const ph=((d1-d2)/42+t*.004)%1;
+        const iv=.5+.5*Math.cos(ph*Math.PI*2);
+        ctx.globalAlpha=iv*.055;
+        ctx.fillStyle=iv>.5?'#00c9c0':'#c9a84c';
+        ctx.fillRect(x,y,step-1,step-1);
+      }
+    }
+    ctx.globalAlpha=1; t++; requestAnimationFrame(draw);
+  })();
+})();
+
+// ═══════════════════════════════════════════
+// ROTATING SNAKES (Sala Física)
+// ═══════════════════════════════════════════
+(()=>{
+  const c=document.getElementById('c-snakes');
+  if(!c)return;
+  const ctx=c.getContext('2d');
+  let W,H;
+  const resize=()=>{
+    W=c.width=c.offsetWidth; H=c.height=c.offsetHeight;
+    draw();
+  };
+  resize(); window.addEventListener('resize',resize);
+
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    const cx=W/2,cy=H/2,rings=9;
+    for(let r=rings;r>0;r--){
+      const rad=r*(Math.min(W,H)/(2.2*rings));
+      const seg=Math.round(2*Math.PI*rad/14);
+      for(let i=0;i<seg;i++){
+        const a=(i/seg)*Math.PI*2, na=((i+1)/seg)*Math.PI*2;
+        const cols=['rgba(0,201,192,.09)','rgba(0,201,192,.22)','rgba(201,168,76,.22)','rgba(201,168,76,.07)'];
+        const innerRad = Math.max(0.5, rad-18);
+        if(innerRad >= rad) continue;
+        ctx.beginPath();
+        ctx.arc(cx,cy,rad,a,na);
+        ctx.arc(cx,cy,innerRad,na,a,true);
+        ctx.closePath();
+        ctx.fillStyle=cols[i%4];
+        ctx.fill();
+      }
+    }
+  }
+})();
+
+// ═══════════════════════════════════════════
+// PENROSE TRIANGLE CANVAS (Sala Física sidebar)
+// ═══════════════════════════════════════════
+(()=>{
+  const c=document.getElementById('c-penrose');
+  if(!c)return;
+  const ctx=c.getContext('2d');
+  let W,H,t=0;
+  const resize=()=>{W=c.width=c.offsetWidth;H=c.height=c.offsetHeight;};
+  resize(); window.addEventListener('resize',resize);
+
+  (function draw(){
+    ctx.clearRect(0,0,W,H);
+    const cx=W/2,cy=H/2,s=Math.min(W,H)*.32;
+    const pulse=1+Math.sin(t*.015)*.03;
+    const ss=s*pulse;
+    // Outer impossible triangle
+    const pts=[
+      [cx,cy-ss*1.15],
+      [cx+ss,cy+ss*.6],
+      [cx-ss,cy+ss*.6]
+    ];
+    // Draw three impossible beams
+    const thick=ss*.22;
+    ctx.lineWidth=thick;
+    ctx.lineCap='round';
+    ctx.lineJoin='round';
+    // gradient stroke
+    const grd=ctx.createLinearGradient(pts[0][0],pts[0][1],pts[2][0],pts[2][1]);
+    grd.addColorStop(0,'rgba(0,201,192,.7)');
+    grd.addColorStop(.5,'rgba(201,168,76,.7)');
+    grd.addColorStop(1,'rgba(0,201,192,.4)');
+    ctx.strokeStyle=grd;
+    ctx.beginPath();
+    ctx.moveTo(pts[0][0],pts[0][1]);
+    ctx.lineTo(pts[1][0],pts[1][1]);
+    ctx.lineTo(pts[2][0],pts[2][1]);
+    ctx.closePath();
+    ctx.stroke();
+    // Impossible overlap: cover one corner to simulate depth inversion
+    ctx.fillStyle='#0b1120';
+    ctx.beginPath();
+    ctx.arc(pts[2][0]+thick*.4,pts[2][1]-thick*.1,thick*.6,0,Math.PI*2);
+    ctx.fill();
+    // Re-draw the overlapping beam
+    ctx.strokeStyle='rgba(0,201,192,.7)';
+    ctx.lineWidth=thick*.8;
+    ctx.beginPath();
+    ctx.moveTo(pts[2][0]-thick*.3,pts[2][1]-thick*.5);
+    ctx.lineTo(pts[0][0]-thick*.15,pts[0][1]+thick*.6);
+    ctx.stroke();
+
+    t++; requestAnimationFrame(draw);
+  })();
+})();
+
+// ═══════════════════════════════════════════
+// SIERPINSKI (Sala Competencias)
+// ═══════════════════════════════════════════
+(()=>{
+  const c=document.getElementById('c-comp');
+  if(!c)return;
+  const ctx=c.getContext('2d');
+  let W,H;
+  const resize=()=>{W=c.width=c.offsetWidth;H=c.height=c.offsetHeight;draw();};
+  resize(); window.addEventListener('resize',resize);
+  function sierp(x,y,s,d){
+    if(d===0||s<5){
+      ctx.beginPath();
+      ctx.moveTo(x,y-s*.577); ctx.lineTo(x+s*.5,y+s*.289); ctx.lineTo(x-s*.5,y+s*.289);
+      ctx.closePath(); ctx.strokeStyle='rgba(0,201,192,.12)'; ctx.lineWidth=.5; ctx.stroke()
