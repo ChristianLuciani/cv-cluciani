@@ -481,6 +481,34 @@ body {
   font-family:var(--font-mono); font-size:.55rem;
   color:var(--teal); letter-spacing:.2em; opacity:.6;
 }
+.illusion-link {
+  position:absolute; bottom:.8rem; left:1rem;
+  font-family:var(--font-mono); font-size:.55rem;
+  color:var(--muted); letter-spacing:.1em; opacity:0;
+  text-decoration:none; transition:opacity .3s;
+}
+.illusion-frame:hover .illusion-link { opacity:.7; }
+.illusion-link:hover { color:var(--teal) !important; opacity:1 !important; }
+
+/* ══════════════════════════════════════════════
+   THUMBNAIL DE PAPER
+   Miniatura a la izquierda del .pub-item
+══════════════════════════════════════════════ */
+.pub-item { grid-template-columns:72px 60px 1fr; }
+.pub-thumb {
+  width:56px; height:40px; object-fit:cover; object-position:top;
+  border:1px solid var(--border); opacity:.75;
+  transition:opacity .3s, border-color .3s;
+  display:block;
+}
+.pub-item:hover .pub-thumb { opacity:1; border-color:var(--teal); }
+.pub-thumb-placeholder {
+  width:56px; height:40px;
+  background:rgba(0,201,192,0.06); border:1px solid var(--border);
+  display:flex; align-items:center; justify-content:center;
+  font-family:var(--font-mono); font-size:.45rem; color:var(--muted);
+  letter-spacing:.1em; text-align:center; line-height:1.4;
+}
 
 /* ══════════════════════════════════════════════
    COMPONENTE: NOTA DORADA (timeline / contexto)
@@ -708,6 +736,7 @@ body {
         <div class="illusion-frame" style="height:250px;margin-top:2.5rem;" data-scroll="zoom-in" data-delay="2">
           <canvas id="c-necker-ill" style="width:100%;height:100%"></canvas>
           <div class="illusion-label">CUBO DE NECKER · 1832</div>
+          <a class="illusion-link" href="https://michaelbach.de/ot/sze-necker/" target="_blank" rel="noopener">↗ michaelbach.de</a>
         </div>
       </div>
 
@@ -826,6 +855,7 @@ body {
         <div class="illusion-frame" style="height:360px">
           <canvas id="c-stairs-ill" style="width:100%;height:100%"></canvas>
           <div class="illusion-label">ESCALERA DE PENROSE · 1958</div>
+          <a class="illusion-link" href="https://michaelbach.de/ot/sze-penrose-stairs/" target="_blank" rel="noopener">↗ michaelbach.de</a>
         </div>
 
         <!-- Lab STEM -->
@@ -1104,6 +1134,7 @@ body {
       <div data-scroll="from-left">
         <div class="pub-item">
           <div class="pub-year">2025</div>
+          <img class="pub-thumb" src="assets/images/papers/trujillo2025_thumb.svg" alt="Carbon Trends 2025">
           <div>
             <div class="pub-title">Highly efficient caffeine-based PVA composite film for UV shielding</div>
             <div class="pub-journal">Trujillo Galarza et al. · Carbon Trends · Vol. 20, 100502</div>
@@ -1112,6 +1143,7 @@ body {
         </div>
         <div class="pub-item">
           <div class="pub-year">2025</div>
+          <img class="pub-thumb" src="assets/images/papers/landazuri2025_thumb.svg" alt="ChemPhysChem 2025">
           <div>
             <div class="pub-title">Tunable Dielectric Carbon Materials from Hydrothermally Nanostructured Organic Carbon Sources</div>
             <div class="pub-journal">Landázuri et al. · ChemPhysChem · 26, e202400711</div>
@@ -1120,6 +1152,7 @@ body {
         </div>
         <div class="pub-item">
           <div class="pub-year">2023</div>
+          <img class="pub-thumb" src="assets/images/papers/zambrano2023_thumb.svg" alt="Heliyon 2023">
           <div>
             <div class="pub-title">Optimization of microfibrillated cellulose isolation from cocoa pod husk via mild oxalic acid hydrolysis</div>
             <div class="pub-journal">Zambrano et al. · Heliyon · 9, e17258</div>
@@ -1136,6 +1169,7 @@ body {
         </div>
         <div class="pub-item">
           <div class="pub-year">2022</div>
+          <img class="pub-thumb" src="assets/images/papers/zambrano2022_thumb.svg" alt="SSRN 2022">
           <div>
             <div class="pub-title">Optimization of Microcrystalline Cellulose Isolation from Cocoa Pod Husk via Mild Oxalic Acid Hydrolysis</div>
             <div class="pub-journal">Zambrano et al. · SSRN Electronic Journal</div>
@@ -1144,6 +1178,7 @@ body {
         </div>
         <div class="pub-item">
           <div class="pub-year">2006</div>
+          <img class="pub-thumb" src="assets/images/papers/cabrera2006_thumb.png" alt="Condensed Matter Physics 2006">
           <div>
             <div class="pub-title">Neural control on multiple time scales: Insights from human stick balancing</div>
             <div class="pub-journal">Cabrera, Luciani, Milton · Condensed Matter Physics · Vol. 9, No. 2</div>
@@ -1152,6 +1187,7 @@ body {
         </div>
         <div class="pub-item">
           <div class="pub-year">2006</div>
+          <img class="pub-thumb" src="assets/images/papers/hosaka2006_thumb.svg" alt="Prog. Theor. Phys. 2006">
           <div>
             <div class="pub-title">Balancing with Noise and Delay</div>
             <div class="pub-journal">Hosaka, Ohira, Luciani, Cabrera, Milton · Progress of Theoretical Physics Supplement · 161</div>
@@ -1177,6 +1213,7 @@ body {
         <div class="illusion-frame" style="height:280px">
           <canvas id="c-penrose" style="width:100%;height:100%"></canvas>
           <div class="illusion-label">TRIÁNGULO DE PENROSE · 1954</div>
+          <a class="illusion-link" href="https://michaelbach.de/ot/sze-penrose-triangle/" target="_blank" rel="noopener">↗ michaelbach.de</a>
         </div>
         <p style="margin-top:1.5rem;font-size:.88rem;color:var(--muted);font-style:italic;line-height:1.8">
           "Lo imposible solo lo es hasta que alguien lo dibuja correctamente."
