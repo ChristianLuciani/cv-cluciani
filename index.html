@@ -481,6 +481,41 @@ body {
   font-family:var(--font-mono); font-size:.55rem;
   color:var(--teal); letter-spacing:.2em; opacity:.6;
 }
+.illusion-link {
+  position:absolute; bottom:.8rem; left:1rem;
+  font-family:var(--font-mono); font-size:.55rem;
+  color:var(--muted); letter-spacing:.1em; opacity:0;
+  text-decoration:none; transition:opacity .3s;
+}
+.illusion-frame:hover .illusion-link { opacity:.7; }
+.illusion-link:hover { color:var(--teal) !important; opacity:1 !important; }
+
+/* ══════════════════════════════════════════════
+   THUMBNAIL DE PAPER
+   Miniatura a la izquierda del .pub-item
+══════════════════════════════════════════════ */
+.pub-item { grid-template-columns:60px 56px 1fr; gap:1rem 1.2rem; align-items:start; }
+.pub-thumb {
+  width:56px; height:40px; object-fit:cover; object-position:top;
+  border:1px solid var(--border); opacity:.75;
+  transition:opacity .3s, border-color .3s;
+  display:block; flex-shrink:0;
+}
+.pub-item:hover .pub-thumb { opacity:1; border-color:var(--teal); }
+/* Fallback cuando la imagen no carga */
+.pub-thumb.error {
+  display:flex; align-items:center; justify-content:center;
+  background:rgba(0,201,192,0.04); border:1px solid var(--border);
+  font-family:var(--font-mono); font-size:.4rem; color:var(--muted);
+  letter-spacing:.05em; text-align:center; line-height:1.3;
+}
+.pub-thumb-placeholder {
+  width:56px; height:40px;
+  background:rgba(0,201,192,0.06); border:1px solid var(--border);
+  display:flex; align-items:center; justify-content:center;
+  font-family:var(--font-mono); font-size:.45rem; color:var(--muted);
+  letter-spacing:.1em; text-align:center; line-height:1.4;
+}
 
 /* ══════════════════════════════════════════════
    COMPONENTE: NOTA DORADA (timeline / contexto)
@@ -530,6 +565,65 @@ body {
   border:1px solid var(--border); letter-spacing:.18em; transition:all .3s;
 }
 .contact-link:hover { color:var(--teal); border-color:var(--teal); background:rgba(0,201,192,.05); }
+
+/* ══════════════════════════════════════════════
+   BOTÓN DE DESCARGA
+══════════════════════════════════════════════ */
+#btn-download {
+  position:fixed; bottom:2rem; right:4rem; z-index:150;
+  display:flex; align-items:center; gap:.6rem;
+  padding:.75rem 1.4rem;
+  background:var(--night); border:1px solid var(--teal);
+  color:var(--teal); font-family:var(--font-mono);
+  font-size:.62rem; letter-spacing:.25em; text-transform:uppercase;
+  cursor:pointer; transition:background .3s,color .3s,box-shadow .3s;
+  opacity:0; animation:fadeUp 1s 2.6s both;
+}
+#btn-download:hover { background:var(--teal); color:var(--night); box-shadow:0 0 20px rgba(0,201,192,.35); }
+
+/* ══════════════════════════════════════════════
+   FOTO DE PERFIL — círculo con glow teal
+══════════════════════════════════════════════ */
+.photo-placeholder {
+  width:148px; height:148px; border-radius:50%;
+  background:rgba(0,201,192,0.07);
+  border:2px solid var(--teal);
+  box-shadow:0 0 0 6px rgba(0,201,192,0.08),0 0 28px rgba(0,201,192,0.12);
+  display:flex; align-items:center; justify-content:center;
+  margin:0 auto 1.8rem; transition:box-shadow .4s;
+  position:relative; overflow:hidden;
+}
+.photo-placeholder:hover { box-shadow:0 0 0 8px rgba(0,201,192,0.14),0 0 40px rgba(0,201,192,0.25); }
+.photo-ph-inner {
+  display:flex; flex-direction:column; align-items:center;
+  gap:.5rem; font-family:var(--font-mono); font-size:.52rem;
+  color:var(--muted); letter-spacing:.2em; text-align:center; padding:1rem;
+}
+.photo-placeholder img {
+  width:100%; height:100%; object-fit:cover; object-position:center top;
+  display:block; filter:brightness(.92) saturate(.75) contrast(1.02);
+  transition:filter .5s;
+}
+.photo-placeholder:hover img { filter:brightness(1.0) saturate(.9) contrast(1.02); }
+
+/* ══════════════════════════════════════════════
+   ESTILOS DE IMPRESIÓN — CV plano A4
+══════════════════════════════════════════════ */
+@media print {
+  body > *:not(#print-cv) { display:none !important; }
+  canvas,#loader,#nav,#progress,#btn-download,.cursor,.cursor-ring,.room-canvas { display:none !important; }
+  #print-cv { display:block !important; font-family:Georgia,serif; font-size:11pt; color:#111; line-height:1.6; padding:2cm; background:white; }
+  #print-cv h1 { font-size:22pt; margin-bottom:2pt; }
+  #print-cv h2 { font-size:13pt; border-bottom:1pt solid #ccc; padding-bottom:3pt; margin:18pt 0 6pt; }
+  #print-cv h3 { font-size:11pt; margin-bottom:2pt; }
+  #print-cv .p-meta { font-size:9pt; color:#555; }
+  #print-cv ul { padding-left:1.2em; }
+  #print-cv li { margin-bottom:2pt; }
+  #print-cv a { color:#111; text-decoration:none; }
+  #print-cv .p-section { margin-bottom:14pt; }
+  #print-cv .p-entry { margin-bottom:10pt; }
+  @page { margin:2cm; size:A4; }
+}
 
 /* ══════════════════════════════════════════════
    UTILIDADES
@@ -620,6 +714,19 @@ body {
       <!-- Columna izquierda: tarjeta de perfil + ilusión -->
       <div class="profile-aside">
         <div class="profile-card" data-scroll="from-left">
+          <!--
+            FOTO: descomenta <img> y comenta .photo-ph-inner para activar
+            O usa URL directa: src="https://url-de-tu-foto.jpg"
+          -->
+          <div class="photo-placeholder" id="photo-slot">
+            <img src="https://lh3.googleusercontent.com/pw/AP1GczO0shri3gqnp7PXfST6iji5bEzrFTzJfnQwKJaGDiLIpGDDWUBgi0eSqW3v79qv63XXBukEWeyWLobOPjLO2NlsJJlyi_A_-KdJtjzJGswIfIank4YA=w500-h500-c"
+                 alt="Christian Luciani"
+                 onerror="this.style.display='none';document.getElementById('photo-fallback').style.display='flex'">
+            <div class="photo-ph-inner" id="photo-fallback" style="display:none">
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="rgba(0,201,192,0.4)" stroke-width="1" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+              <span>Añadir foto local</span>
+            </div>
+          </div>
           <p class="profile-text">Físico con candidatura doctoral en sistemas complejos y más de 20 años navegando entre la investigación científica, la docencia universitaria y la innovación educativa.</p>
           <br>
           <p class="profile-text" style="color:var(--muted);font-size:.95rem">En 2024 diseñé e implementé <span class="hl">Drahma</span>: 36 tutores virtuales con IA y pedagogía socrática, alineados al currículo ecuatoriano, probados en campo con comunidades indígenas amazónicas.</p>
@@ -636,15 +743,16 @@ body {
         <div class="illusion-frame" style="height:250px;margin-top:2.5rem;" data-scroll="zoom-in" data-delay="2">
           <canvas id="c-necker-ill" style="width:100%;height:100%"></canvas>
           <div class="illusion-label">CUBO DE NECKER · 1832</div>
+          <a class="illusion-link" href="https://michaelbach.de/ot/sze-necker/" target="_blank" rel="noopener">↗ michaelbach.de</a>
         </div>
       </div>
 
       <!-- Columna derecha: formación y eventos -->
       <div>
         <div class="entry" data-scroll="from-right">
-          <div class="entry-period">1997 – 2003</div>
-          <div class="entry-title">Licenciatura en Física</div>
-          <div class="entry-org">Universidad Central de Venezuela · Tesis: Modelos Cosmológicos N-Dimensionales · SENESCYT: 862177536</div>
+          <div class="entry-period">2006 – 2008</div>
+          <div class="entry-title">Especialización en Audiovisuales</div>
+          <div class="entry-org">Escuela de Cine y TV, Caracas · Prix du Public FECOVEN 2008</div>
         </div>
 
         <div class="entry" data-scroll="from-right" data-delay="1">
@@ -654,9 +762,9 @@ body {
         </div>
 
         <div class="entry" data-scroll="from-right" data-delay="2">
-          <div class="entry-period">2006 – 2008</div>
-          <div class="entry-title">Especialización en Audiovisuales</div>
-          <div class="entry-org">Escuela de Cine y TV, Caracas · Prix du Public FECOVEN 2008</div>
+          <div class="entry-period">1997 – 2003</div>
+          <div class="entry-title">Licenciatura en Física</div>
+          <div class="entry-org">Universidad Central de Venezuela · Tesis: Modelos Cosmológicos N-Dimensionales · SENESCYT: 862177536</div>
         </div>
 
         <div class="quote-block" data-scroll="zoom-in" data-delay="3">
@@ -665,15 +773,15 @@ body {
         </div>
 
         <div class="entry" data-scroll="from-right" data-delay="3">
-          <div class="entry-period">2003 · CERN · BECA</div>
-          <div class="entry-title">II Latin American School of High Energy Physics</div>
-          <div class="entry-org">San Miguel Regla, México</div>
-        </div>
-
-        <div class="entry" data-scroll="from-right" data-delay="4">
           <div class="entry-period">2004</div>
           <div class="entry-title">I Taller Andino de Caos y Complejidad</div>
           <div class="entry-org">UNET, San Cristóbal, Venezuela</div>
+        </div>
+
+        <div class="entry" data-scroll="from-right" data-delay="4">
+          <div class="entry-period">2003 · CERN · BECA</div>
+          <div class="entry-title">II Latin American School of High Energy Physics</div>
+          <div class="entry-org">San Miguel Regla, México</div>
         </div>
       </div>
     </div><!-- /profile-grid -->
@@ -690,7 +798,13 @@ body {
 
   <div class="room-content">
     <div class="room-number" data-scroll="up">SALA 02</div>
-    <h2 class="room-title"   data-scroll="zoom-out">Proyecto <em>Drahma</em></h2>
+    <div style="display:flex;align-items:center;gap:1.5rem;margin-bottom:.5rem">
+      <img src="https://raw.githubusercontent.com/DRAHMAN-ORG/drahman-org/main/assets/images/logo.png"
+           alt="Drahma logo"
+           style="height:56px;width:auto;object-fit:contain;filter:drop-shadow(0 0 8px rgba(0,201,192,.4));opacity:.92"
+           onerror="this.style.display='none'">
+      <h2 class="room-title" data-scroll="zoom-out" style="margin-bottom:0">Proyecto <em>Drahma</em></h2>
+    </div>
     <div class="room-subtitle" data-scroll="up" data-delay="1">IA EDUCATIVA · ECUADOR · AGOSTO 2024</div>
 
     <div style="display:grid;grid-template-columns:1.2fr 1fr;gap:4rem;align-items:start" class="two-col-drahma">
@@ -748,6 +862,7 @@ body {
         <div class="illusion-frame" style="height:360px">
           <canvas id="c-stairs-ill" style="width:100%;height:100%"></canvas>
           <div class="illusion-label">ESCALERA DE PENROSE · 1958</div>
+          <a class="illusion-link" href="https://michaelbach.de/ot/sze-penrose-stairs/" target="_blank" rel="noopener">↗ michaelbach.de</a>
         </div>
 
         <!-- Lab STEM -->
@@ -1026,6 +1141,7 @@ body {
       <div data-scroll="from-left">
         <div class="pub-item">
           <div class="pub-year">2025</div>
+          <img class="pub-thumb" src="assets/images/papers/trujillo2025_thumb.svg" alt="Carbon Trends 2025" onerror="this.classList.add('error');this.alt='§'">
           <div>
             <div class="pub-title">Highly efficient caffeine-based PVA composite film for UV shielding</div>
             <div class="pub-journal">Trujillo Galarza et al. · Carbon Trends · Vol. 20, 100502</div>
@@ -1034,6 +1150,7 @@ body {
         </div>
         <div class="pub-item">
           <div class="pub-year">2025</div>
+          <img class="pub-thumb" src="assets/images/papers/landazuri2025_thumb.svg" alt="ChemPhysChem 2025" onerror="this.classList.add('error');this.alt='§'">
           <div>
             <div class="pub-title">Tunable Dielectric Carbon Materials from Hydrothermally Nanostructured Organic Carbon Sources</div>
             <div class="pub-journal">Landázuri et al. · ChemPhysChem · 26, e202400711</div>
@@ -1042,6 +1159,7 @@ body {
         </div>
         <div class="pub-item">
           <div class="pub-year">2023</div>
+          <img class="pub-thumb" src="assets/images/papers/zambrano2023_thumb.svg" alt="Heliyon 2023" onerror="this.classList.add('error');this.alt='§'">
           <div>
             <div class="pub-title">Optimization of microfibrillated cellulose isolation from cocoa pod husk via mild oxalic acid hydrolysis</div>
             <div class="pub-journal">Zambrano et al. · Heliyon · 9, e17258</div>
@@ -1050,6 +1168,7 @@ body {
         </div>
         <div class="pub-item">
           <div class="pub-year">2023</div>
+          <img class="pub-thumb" src="assets/images/papers/landazuri2023_thumb.svg" alt="ResearchGate preprint 2023" onerror="this.classList.add('error');this.alt='§'">
           <div>
             <div class="pub-title">Hydrochars from Lignocellulosic Residues for Green Electronics, Environmental Remediation, Energy and Agricultural Applications</div>
             <div class="pub-journal">Landázuri et al. · ResearchGate preprint</div>
@@ -1058,6 +1177,7 @@ body {
         </div>
         <div class="pub-item">
           <div class="pub-year">2022</div>
+          <img class="pub-thumb" src="assets/images/papers/zambrano2022_thumb.svg" alt="SSRN 2022" onerror="this.classList.add('error');this.alt='§'">
           <div>
             <div class="pub-title">Optimization of Microcrystalline Cellulose Isolation from Cocoa Pod Husk via Mild Oxalic Acid Hydrolysis</div>
             <div class="pub-journal">Zambrano et al. · SSRN Electronic Journal</div>
@@ -1065,7 +1185,16 @@ body {
           </div>
         </div>
         <div class="pub-item">
+          <div class="pub-year">2019–24</div>
+          <img class="pub-thumb" src="assets/images/papers/usfq2019_thumb.svg" alt="USFQ 2019-2024" onerror="this.classList.add('error');this.alt='§'">
+          <div>
+            <div class="pub-title">36 guías de prácticas de laboratorio de física</div>
+            <div class="pub-journal">USFQ · Ingeniería, Ciencias de la Salud, Ciencias Puras · Publicación institucional interna</div>
+          </div>
+        </div>
+        <div class="pub-item">
           <div class="pub-year">2006</div>
+          <img class="pub-thumb" src="assets/images/papers/cabrera2006_thumb.png" alt="Condensed Matter Physics 2006" onerror="this.classList.add('error');this.alt='§'">
           <div>
             <div class="pub-title">Neural control on multiple time scales: Insights from human stick balancing</div>
             <div class="pub-journal">Cabrera, Luciani, Milton · Condensed Matter Physics · Vol. 9, No. 2</div>
@@ -1074,17 +1203,11 @@ body {
         </div>
         <div class="pub-item">
           <div class="pub-year">2006</div>
+          <img class="pub-thumb" src="assets/images/papers/hosaka2006_thumb.svg" alt="Prog. Theor. Phys. 2006" onerror="this.classList.add('error');this.alt='§'">
           <div>
             <div class="pub-title">Balancing with Noise and Delay</div>
             <div class="pub-journal">Hosaka, Ohira, Luciani, Cabrera, Milton · Progress of Theoretical Physics Supplement · 161</div>
             <a class="pub-doi" href="https://doi.org/10.1143/PTPS.161.314" target="_blank">↗ 10.1143/PTPS.161.314</a>
-          </div>
-        </div>
-        <div class="pub-item">
-          <div class="pub-year">2019–24</div>
-          <div>
-            <div class="pub-title">36 guías de prácticas de laboratorio de física</div>
-            <div class="pub-journal">USFQ · Ingeniería, Ciencias de la Salud, Ciencias Puras · Publicación institucional interna</div>
           </div>
         </div>
       </div>
@@ -1099,6 +1222,7 @@ body {
         <div class="illusion-frame" style="height:280px">
           <canvas id="c-penrose" style="width:100%;height:100%"></canvas>
           <div class="illusion-label">TRIÁNGULO DE PENROSE · 1954</div>
+          <a class="illusion-link" href="https://michaelbach.de/ot/sze-penrose-triangle/" target="_blank" rel="noopener">↗ michaelbach.de</a>
         </div>
         <p style="margin-top:1.5rem;font-size:.88rem;color:var(--muted);font-style:italic;line-height:1.8">
           "Lo imposible solo lo es hasta que alguien lo dibuja correctamente."
@@ -1183,7 +1307,8 @@ body {
 
     <div class="contact-links" data-scroll="from-center" data-delay="2">
       <a class="contact-link" href="mailto:cluciani@gmail.com">✉ cluciani@gmail.com</a>
-      <a class="contact-link" href="tel:+50766510074">☎ (+507) 6651-0074</a>
+      <a class="contact-link" href="tel:+50766510074">☎ Panamá (+507) 6651-0074</a>
+      <a class="contact-link" href="https://wa.me/593993716335" target="_blank">💬 WhatsApp (+593) 99 371 6335</a>
       <a class="contact-link" href="https://www.linkedin.com/in/christian-luciani" target="_blank">↗ LinkedIn</a>
       <a class="contact-link" href="https://www.researchgate.net/profile/Christian-Luciani" target="_blank">↗ ResearchGate</a>
       <a class="contact-link" href="https://x.com/cluciani_ve" target="_blank">↗ X @cluciani_ve</a>
@@ -1191,7 +1316,7 @@ body {
     </div>
 
     <div data-scroll="up" data-delay="4" style="margin-top:5rem;font-family:var(--font-mono);font-size:.56rem;color:var(--muted);letter-spacing:.3em">
-      La evolución de los entes cognitivos: del carbono al silicio · emergencia de la inteligencia universal
+      La naturaleza de los seres cognitivos y su interacción · emergencia de la inteligencia universal
     </div>
   </div>
 </section>
@@ -1202,6 +1327,17 @@ body {
 ════════════════════════════════════════════════════ -->
 <script>
 'use strict';
+
+/* ──────────────────────────────────────────────
+   DESCARGA CV — abre diálogo de impresión/PDF
+────────────────────────────────────────────── */
+function printCV() {
+  document.getElementById('print-cv').style.display = 'block';
+  window.print();
+  window.addEventListener('afterprint', () => {
+    document.getElementById('print-cv').style.display = 'none';
+  }, { once: true });
+}
 
 /* ──────────────────────────────────────────────
    CURSOR PERSONALIZADO
@@ -1482,7 +1618,7 @@ navSections.forEach((s, i) => {
 })();
 
 /* ──────────────────────────────────────────────
-   CANVAS: Cubo de Necker animado (Sala 01)
+   CANVAS: Cubo de Necker animado — sidebar (Sala 01)
 ────────────────────────────────────────────── */
 (function neckerCanvas() {
   const c = document.getElementById('c-necker-ill');
@@ -1524,6 +1660,64 @@ navSections.forEach((s, i) => {
     if (f > 0.5) { ctx.strokeRect(cx-s/2, cy-s/2, s, s); }
     else         { ctx.strokeRect(cx-s/2+off, cy-s/2-off, s, s); }
 
+    t++; requestAnimationFrame(draw);
+  })();
+})();
+
+/* ── NECKER GRID — fondo full-width Sala 01, degradado en bordes ── */
+(function neckerBgCanvas() {
+  const c = document.getElementById('c-necker');
+  if (!c) return;
+  const ctx = c.getContext('2d');
+  let W, H, t = 0;
+  const resize = () => { W = c.width = c.offsetWidth; H = c.height = c.offsetHeight; };
+  resize(); window.addEventListener('resize', resize);
+
+  function necker(cx, cy, s, phase) {
+    const off = s * 0.42;
+    const f   = 0.5 + 0.5 * Math.sin(phase + t * 0.006);
+    // Más visible: alpha base más alto
+    const a   = 0.14 + 0.10 * f;
+    // Cara trasera
+    ctx.strokeStyle = `rgba(0,201,192,${a * 0.55})`; ctx.lineWidth = 0.6;
+    ctx.strokeRect(cx - s/2 + off, cy - s/2 - off, s, s);
+    // Cara delantera — más brillante
+    ctx.strokeStyle = `rgba(0,201,192,${a})`; ctx.lineWidth = 0.9;
+    ctx.strokeRect(cx - s/2, cy - s/2, s, s);
+    // Aristas de conexión en gold
+    [[cx-s/2,cy-s/2],[cx+s/2,cy-s/2],[cx+s/2,cy+s/2],[cx-s/2,cy+s/2]].forEach(([x,y]) => {
+      ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x+off,y-off);
+      ctx.strokeStyle = `rgba(201,168,76,${a * 0.8})`; ctx.lineWidth = 0.6; ctx.stroke();
+    });
+  }
+
+  function applyVignette() {
+    // Degradado horizontal: desvanece en bordes izquierdo y derecho
+    const gH = ctx.createLinearGradient(0, 0, W, 0);
+    gH.addColorStop(0,    'rgba(11,17,32,1)');
+    gH.addColorStop(0.08, 'rgba(11,17,32,0)');
+    gH.addColorStop(0.92, 'rgba(11,17,32,0)');
+    gH.addColorStop(1,    'rgba(11,17,32,1)');
+    ctx.fillStyle = gH;
+    ctx.fillRect(0, 0, W, H);
+    // Degradado vertical: suave en top/bottom
+    const gV = ctx.createLinearGradient(0, 0, 0, H);
+    gV.addColorStop(0,    'rgba(11,17,32,0.7)');
+    gV.addColorStop(0.12, 'rgba(11,17,32,0)');
+    gV.addColorStop(0.88, 'rgba(11,17,32,0)');
+    gV.addColorStop(1,    'rgba(11,17,32,0.7)');
+    ctx.fillStyle = gV;
+    ctx.fillRect(0, 0, W, H);
+  }
+
+  (function draw() {
+    ctx.clearRect(0, 0, W, H);
+    const s = 72, gap = s * 1.5;
+    const cols = Math.ceil(W / gap) + 2, rows = Math.ceil(H / gap) + 2;
+    for (let r = -1; r < rows; r++)
+      for (let cc = -1; cc < cols; cc++)
+        necker(cc * gap + (r % 2 === 0 ? 0 : gap * 0.5), r * gap * 0.82, s, (r*7+cc*3)*0.8);
+    applyVignette();
     t++; requestAnimationFrame(draw);
   })();
 })();
