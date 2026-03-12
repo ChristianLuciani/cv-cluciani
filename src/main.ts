@@ -1,5 +1,6 @@
 import { id as kochId, mountKochLogo } from "./ts/fractals/koch";
 import { id as neckerBgId, mountNeckerBg } from "./ts/illusions/neckerBg";
+import { id as neckerIllId, mountNeckerIll } from "./ts/illusions/neckerIll";
 
 type CanvasModule = {
   id: string;
@@ -8,7 +9,8 @@ type CanvasModule = {
 
 const CANVAS_MODULES: CanvasModule[] = [
   { id: kochId, mount: (c) => mountKochLogo(c) },
-  { id: neckerBgId, mount: (c) => mountNeckerBg(c) }
+  { id: neckerBgId, mount: (c) => mountNeckerBg(c) },
+  { id: neckerIllId, mount: (c) => mountNeckerIll(c) }
 ];
 
 function init() {
