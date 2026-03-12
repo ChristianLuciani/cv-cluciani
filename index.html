@@ -1546,63 +1546,7 @@ navSections.forEach((s, i) => {
   })();
 })();
 
-/* ── NECKER GRID — fondo full-width Sala 01, degradado en bordes ── */
-(function neckerBgCanvas() {
-  const c = document.getElementById('c-necker');
-  if (!c) return;
-  const ctx = c.getContext('2d');
-  let W, H, t = 0;
-  const resize = () => { W = c.width = c.offsetWidth; H = c.height = c.offsetHeight; };
-  resize(); window.addEventListener('resize', resize);
-
-  function necker(cx, cy, s, phase) {
-    const off = s * 0.42;
-    const f   = 0.5 + 0.5 * Math.sin(phase + t * 0.006);
-    // Más visible: alpha base más alto
-    const a   = 0.14 + 0.10 * f;
-    // Cara trasera
-    ctx.strokeStyle = `rgba(0,201,192,${a * 0.55})`; ctx.lineWidth = 0.6;
-    ctx.strokeRect(cx - s/2 + off, cy - s/2 - off, s, s);
-    // Cara delantera — más brillante
-    ctx.strokeStyle = `rgba(0,201,192,${a})`; ctx.lineWidth = 0.9;
-    ctx.strokeRect(cx - s/2, cy - s/2, s, s);
-    // Aristas de conexión en gold
-    [[cx-s/2,cy-s/2],[cx+s/2,cy-s/2],[cx+s/2,cy+s/2],[cx-s/2,cy+s/2]].forEach(([x,y]) => {
-      ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x+off,y-off);
-      ctx.strokeStyle = `rgba(201,168,76,${a * 0.8})`; ctx.lineWidth = 0.6; ctx.stroke();
-    });
-  }
-
-  function applyVignette() {
-    // Degradado horizontal: desvanece en bordes izquierdo y derecho
-    const gH = ctx.createLinearGradient(0, 0, W, 0);
-    gH.addColorStop(0,    'rgba(11,17,32,1)');
-    gH.addColorStop(0.08, 'rgba(11,17,32,0)');
-    gH.addColorStop(0.92, 'rgba(11,17,32,0)');
-    gH.addColorStop(1,    'rgba(11,17,32,1)');
-    ctx.fillStyle = gH;
-    ctx.fillRect(0, 0, W, H);
-    // Degradado vertical: suave en top/bottom
-    const gV = ctx.createLinearGradient(0, 0, 0, H);
-    gV.addColorStop(0,    'rgba(11,17,32,0.7)');
-    gV.addColorStop(0.12, 'rgba(11,17,32,0)');
-    gV.addColorStop(0.88, 'rgba(11,17,32,0)');
-    gV.addColorStop(1,    'rgba(11,17,32,0.7)');
-    ctx.fillStyle = gV;
-    ctx.fillRect(0, 0, W, H);
-  }
-
-  (function draw() {
-    ctx.clearRect(0, 0, W, H);
-    const s = 72, gap = s * 1.5;
-    const cols = Math.ceil(W / gap) + 2, rows = Math.ceil(H / gap) + 2;
-    for (let r = -1; r < rows; r++)
-      for (let cc = -1; cc < cols; cc++)
-        necker(cc * gap + (r % 2 === 0 ? 0 : gap * 0.5), r * gap * 0.82, s, (r*7+cc*3)*0.8);
-    applyVignette();
-    t++; requestAnimationFrame(draw);
-  })();
-})();
+/* NECKER GRID (c-necker) migrated to TypeScript: src/ts/illusions/neckerBg.ts */
 
 /* ──────────────────────────────────────────────
    CANVAS: Escalera de Penrose (Sala 02)
