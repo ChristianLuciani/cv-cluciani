@@ -40,6 +40,7 @@
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Fira+Code:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+<script type="module" src="/src/main.ts"></script>
 
 <!--
 ╔══════════════════════════════════════════════════════════════════╗
@@ -1418,125 +1419,6 @@ document.querySelectorAll('a, button, .nav-dot, .drahma-cell, .pub-item, .skill-
 });
 
 /* ──────────────────────────────────────────────
-   FRACTAL LOGO — Koch Snowflake
-   Fases:
-   1. Cargando: centrado en pantalla, girando, grande
-   2. Minimizado: esquina sup-izq, pequeño, estático
-────────────────────────────────────────────── */
-const fractalCanvas = document.getElementById('fractal-logo');
-const fctx = fractalCanvas.getContext('2d');
-let fractalSize = 120;
-let fractalAngle = 0;
-let fractalMinimized = false;
-let fractalAnimFrame;
-
-fractalCanvas.width  = 120;
-fractalCanvas.height = 120;
-
-// Center in viewport on init
-fractalCanvas.style.position = 'fixed';
-fractalCanvas.style.left = (window.innerWidth  / 2 - 60) + 'px';
-fractalCanvas.style.top  = (window.innerHeight / 2 - 60) + 'px';
-
-// Draw Koch snowflake fractal
-function kochPoint(p1, p2) {
-  const dx = p2.x - p1.x, dy = p2.y - p1.y;
-  return {
-    a: { x: p1.x + dx/3,         y: p1.y + dy/3 },
-    b: { x: p1.x + dx/2 - dy * Math.sqrt(3)/6,
-         y: p1.y + dy/2 + dx * Math.sqrt(3)/6 },
-    c: { x: p1.x + 2*dx/3,       y: p1.y + 2*dy/3 }
-  };
-}
-
-function kochSegments(pts, depth) {
-  if (depth === 0) return pts;
-  const result = [];
-  for (let i = 0; i < pts.length - 1; i++) {
-    const { a, b, c } = kochPoint(pts[i], pts[i+1]);
-    result.push(pts[i], a, b, c);
-  }
-  result.push(pts[pts.length - 1]);
-  return kochSegments(result, depth - 1);
-}
-
-function drawKoch(ctx, cx, cy, r, depth, angle) {
-  // Three initial points of equilateral triangle
-  const pts = [0, 1, 2].map(i => ({
-    x: cx + r * Math.cos(angle + i * 2*Math.PI/3),
-    y: cy + r * Math.sin(angle + i * 2*Math.PI/3)
-  }));
-  pts.push(pts[0]); // close
-
-  const segs = kochSegments(pts, depth);
-
-  ctx.beginPath();
-  ctx.moveTo(segs[0].x, segs[0].y);
-  for (let i = 1; i < segs.length; i++) ctx.lineTo(segs[i].x, segs[i].y);
-  ctx.closePath();
-
-  // Gradient fill
-  const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
-  g.addColorStop(0,   'rgba(0,201,192,0.9)');
-  g.addColorStop(0.5, 'rgba(201,168,76,0.7)');
-  g.addColorStop(1,   'rgba(0,201,192,0.3)');
-  ctx.strokeStyle = 'rgba(0,201,192,0.8)';
-  ctx.lineWidth = fractalMinimized ? 0.5 : 1.2;
-  ctx.fillStyle = g;
-  ctx.fill();
-  ctx.stroke();
-}
-
-function animFractal() {
-  fctx.clearRect(0, 0, fractalCanvas.width, fractalCanvas.height);
-  const cx = fractalCanvas.width  / 2;
-  const cy = fractalCanvas.height / 2;
-  const r  = cx * 0.78;
-
-  // Draw 3 nested snowflakes for depth
-  drawKoch(fctx, cx, cy, r,       3, fractalAngle);
-  drawKoch(fctx, cx, cy, r * 0.6, 3, -fractalAngle * 1.3);
-  drawKoch(fctx, cx, cy, r * 0.3, 3, fractalAngle * 2);
-
-  if (!fractalMinimized) {
-    fractalAngle += 0.008;
-    fractalAnimFrame = requestAnimationFrame(animFractal);
-  }
-}
-animFractal();
-
-// Minimize logo after load
-function minimizeLogo() {
-  fractalMinimized = true;
-  cancelAnimationFrame(fractalAnimFrame);
-
-  fractalCanvas.width  = 42;
-  fractalCanvas.height = 42;
-  fractalCanvas.classList.add('minimized');
-
-  // Draw static final state
-  fctx.clearRect(0, 0, 42, 42);
-  drawKoch(fctx, 21, 21, 16, 3, 0);
-  drawKoch(fctx, 21, 21, 10, 3, Math.PI/6);
-  drawKoch(fctx, 21, 21, 5,  3, -Math.PI/6);
-}
-
-// Click logo to scroll to top
-fractalCanvas.addEventListener('click', () => {
-  document.getElementById('hero').scrollIntoView({ behavior: 'smooth' });
-});
-
-/* ──────────────────────────────────────────────
-   LOADER — ocultar y minimizar logo
-────────────────────────────────────────────── */
-window.addEventListener('load', () => {
-  setTimeout(() => {
-    document.getElementById('loader').classList.add('hidden');
-    minimizeLogo();
-  }, 1800);
-});
-
-/* ──────────────────────────────────────────────
    BARRA DE PROGRESO
 ────────────────────────────────────────────── */
 const prog = document.getElementById('progress');
@@ -1671,110 +1553,9 @@ navSections.forEach((s, i) => {
   })();
 })();
 
-/* ──────────────────────────────────────────────
-   CANVAS: Cubo de Necker animado — sidebar (Sala 01)
-────────────────────────────────────────────── */
-(function neckerCanvas() {
-  const c = document.getElementById('c-necker-ill');
-  if (!c) return;
-  const ctx = c.getContext('2d');
-  let W, H, t = 0;
-  const resize = () => { W = c.width = c.offsetWidth; H = c.height = c.offsetHeight; };
-  resize(); window.addEventListener('resize', resize);
+/* NECKER ILL (c-necker-ill) migrated to TypeScript: src/ts/illusions/neckerIll.ts */
 
-  (function draw() {
-    ctx.clearRect(0, 0, W, H);
-    const cx = W/2, cy = H/2;
-    const s = Math.min(W, H) * 0.42;
-    const off = s * 0.42;
-    const f = 0.5 + 0.5 * Math.sin(t * 0.012); // oscillation 0→1
-
-    // Back face (dims when front is prominent)
-    ctx.strokeStyle = `rgba(0,201,192,${0.25 + f*0.25})`;
-    ctx.lineWidth = 1;
-    ctx.strokeRect(cx - s/2 + off, cy - s/2 - off, s, s);
-
-    // Front face
-    ctx.strokeStyle = `rgba(0,201,192,${0.55 + (1-f)*0.3})`;
-    ctx.lineWidth = 1.5;
-    ctx.strokeRect(cx - s/2, cy - s/2, s, s);
-
-    // Connecting edges
-    const corners = [[cx-s/2,cy-s/2],[cx+s/2,cy-s/2],[cx+s/2,cy+s/2],[cx-s/2,cy+s/2]];
-    corners.forEach(([x,y]) => {
-      ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x+off, y-off);
-      ctx.strokeStyle = `rgba(201,168,76,${0.4 + f*0.3})`;
-      ctx.lineWidth = 1;
-      ctx.stroke();
-    });
-
-    // Perceptual flip highlight
-    ctx.lineWidth = f * 3;
-    ctx.strokeStyle = `rgba(201,168,76,${f * 0.7})`;
-    if (f > 0.5) { ctx.strokeRect(cx-s/2, cy-s/2, s, s); }
-    else         { ctx.strokeRect(cx-s/2+off, cy-s/2-off, s, s); }
-
-    t++; requestAnimationFrame(draw);
-  })();
-})();
-
-/* ── NECKER GRID — fondo full-width Sala 01, degradado en bordes ── */
-(function neckerBgCanvas() {
-  const c = document.getElementById('c-necker');
-  if (!c) return;
-  const ctx = c.getContext('2d');
-  let W, H, t = 0;
-  const resize = () => { W = c.width = c.offsetWidth; H = c.height = c.offsetHeight; };
-  resize(); window.addEventListener('resize', resize);
-
-  function necker(cx, cy, s, phase) {
-    const off = s * 0.42;
-    const f   = 0.5 + 0.5 * Math.sin(phase + t * 0.006);
-    // Más visible: alpha base más alto
-    const a   = 0.14 + 0.10 * f;
-    // Cara trasera
-    ctx.strokeStyle = `rgba(0,201,192,${a * 0.55})`; ctx.lineWidth = 0.6;
-    ctx.strokeRect(cx - s/2 + off, cy - s/2 - off, s, s);
-    // Cara delantera — más brillante
-    ctx.strokeStyle = `rgba(0,201,192,${a})`; ctx.lineWidth = 0.9;
-    ctx.strokeRect(cx - s/2, cy - s/2, s, s);
-    // Aristas de conexión en gold
-    [[cx-s/2,cy-s/2],[cx+s/2,cy-s/2],[cx+s/2,cy+s/2],[cx-s/2,cy+s/2]].forEach(([x,y]) => {
-      ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x+off,y-off);
-      ctx.strokeStyle = `rgba(201,168,76,${a * 0.8})`; ctx.lineWidth = 0.6; ctx.stroke();
-    });
-  }
-
-  function applyVignette() {
-    // Degradado horizontal: desvanece en bordes izquierdo y derecho
-    const gH = ctx.createLinearGradient(0, 0, W, 0);
-    gH.addColorStop(0,    'rgba(11,17,32,1)');
-    gH.addColorStop(0.08, 'rgba(11,17,32,0)');
-    gH.addColorStop(0.92, 'rgba(11,17,32,0)');
-    gH.addColorStop(1,    'rgba(11,17,32,1)');
-    ctx.fillStyle = gH;
-    ctx.fillRect(0, 0, W, H);
-    // Degradado vertical: suave en top/bottom
-    const gV = ctx.createLinearGradient(0, 0, 0, H);
-    gV.addColorStop(0,    'rgba(11,17,32,0.7)');
-    gV.addColorStop(0.12, 'rgba(11,17,32,0)');
-    gV.addColorStop(0.88, 'rgba(11,17,32,0)');
-    gV.addColorStop(1,    'rgba(11,17,32,0.7)');
-    ctx.fillStyle = gV;
-    ctx.fillRect(0, 0, W, H);
-  }
-
-  (function draw() {
-    ctx.clearRect(0, 0, W, H);
-    const s = 72, gap = s * 1.5;
-    const cols = Math.ceil(W / gap) + 2, rows = Math.ceil(H / gap) + 2;
-    for (let r = -1; r < rows; r++)
-      for (let cc = -1; cc < cols; cc++)
-        necker(cc * gap + (r % 2 === 0 ? 0 : gap * 0.5), r * gap * 0.82, s, (r*7+cc*3)*0.8);
-    applyVignette();
-    t++; requestAnimationFrame(draw);
-  })();
-})();
+/* NECKER GRID (c-necker) migrated to TypeScript: src/ts/illusions/neckerBg.ts */
 
 /* ──────────────────────────────────────────────
    CANVAS: Escalera de Penrose (Sala 02)
