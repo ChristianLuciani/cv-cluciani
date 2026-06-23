@@ -7,6 +7,8 @@ export default defineConfig({
   },
   test: {
     globals: true,
-    environment: "jsdom"
+    // Tests cover pure functions only (no DOM/canvas), so the lighter
+    // node environment is sufficient and avoids the jsdom ESM load failure.
+    environment: "node"
   }
 });
