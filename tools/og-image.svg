@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0b1120"/>
+      <stop offset="1" stop-color="#0e1730"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect width="1200" height="8" fill="#00c9c0"/>
+
+  <!-- Decorative graph / ontology motif (right side) -->
+  <g opacity="0.5">
+    <g stroke="#00c9c0" stroke-width="1.4" opacity="0.5">
+      <line x1="940" y1="180" x2="1030" y2="130"/>
+      <line x1="1030" y1="130" x2="1090" y2="220"/>
+      <line x1="940" y1="180" x2="1000" y2="270"/>
+      <line x1="1000" y1="270" x2="1090" y2="220"/>
+      <line x1="1000" y1="270" x2="960" y2="370"/>
+      <line x1="1090" y1="220" x2="1110" y2="330"/>
+    </g>
+    <circle cx="1030" cy="130" r="9" fill="#c9a84c"/>
+    <circle cx="1090" cy="220" r="9" fill="#c9a84c"/>
+    <circle cx="940"  cy="180" r="6" fill="#00c9c0"/>
+    <circle cx="1000" cy="270" r="6" fill="#00c9c0"/>
+    <circle cx="960"  cy="370" r="6" fill="#00c9c0"/>
+    <circle cx="1110" cy="330" r="6" fill="#00c9c0"/>
+  </g>
+
+  <!-- Identity -->
+  <text x="90" y="250" font-family="Georgia, 'Times New Roman', serif" font-size="86" font-weight="700" fill="#f3f6fb">Christian Luciani</text>
+  <text x="92" y="312" font-family="monospace" font-size="30" fill="#00c9c0" letter-spacing="2">INVESTIGADOR INDEPENDIENTE · CUENCA, ECUADOR</text>
+
+  <line x1="92" y1="350" x2="540" y2="350" stroke="#c9a84c" stroke-width="2" opacity="0.6"/>
+
+  <text x="90" y="410" font-family="Georgia, serif" font-size="34" font-style="italic" fill="#d6dde8">Física · Inteligencia Artificial · Tecnología educativa</text>
+  <text x="90" y="462" font-family="monospace" font-size="26" fill="#9fb0c3">Creador de Kontablo — ontología contable universal</text>
+  <text x="90" y="498" font-family="monospace" font-size="26" fill="#9fb0c3">basada en grafos para la economía agéntica</text>
+
+  <text x="90" y="575" font-family="monospace" font-size="22" fill="#6b7a8d">ORCID 0000-0002-6955-5384 · christianluciani.github.io/cv-cluciani</text>
+</svg>

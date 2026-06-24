@@ -10,6 +10,15 @@
 <meta property="og:title" content="Christian Luciani — Investigador independiente">
 <meta property="og:description" content="Creador de Kontablo, ontología contable universal para la economía agéntica. Investigador independiente en Cuenca, Ecuador.">
 <meta property="og:url" content="https://christianluciani.github.io/cv-cluciani/">
+<meta property="og:image" content="https://christianluciani.github.io/cv-cluciani/assets/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="es_ES">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Christian Luciani — Investigador independiente">
+<meta name="twitter:description" content="Creador de Kontablo, ontología contable universal para la economía agéntica. Física, IA y tecnología educativa.">
+<meta name="twitter:image" content="https://christianluciani.github.io/cv-cluciani/assets/og-image.png">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -35,6 +44,75 @@
     "https://github.com/ChristianLuciani",
     "https://www.linkedin.com/in/christian-luciani",
     "https://www.researchgate.net/profile/Christian-Luciani"
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "ScholarlyArticle",
+      "headline": "Kontablo: A Graph-Based Universal Accounting Ontology for the M2M Agentic Economy",
+      "author": { "@type": "Person", "name": "Christian Luciani" },
+      "datePublished": "2026",
+      "publisher": "Zenodo / SSRN",
+      "identifier": "https://doi.org/10.5281/zenodo.20738795",
+      "url": "https://doi.org/10.5281/zenodo.20738795"
+    },
+    {
+      "@type": "ScholarlyArticle",
+      "headline": "Highly efficient caffeine-based PVA composite film for UV shielding",
+      "author": { "@type": "Person", "name": "Christian Luciani" },
+      "datePublished": "2025",
+      "isPartOf": { "@type": "Periodical", "name": "Carbon Trends" },
+      "identifier": "https://doi.org/10.1016/j.cartre.2025.100502",
+      "url": "https://doi.org/10.1016/j.cartre.2025.100502"
+    },
+    {
+      "@type": "ScholarlyArticle",
+      "headline": "Tunable Dielectric Carbon Materials from Hydrothermally Nanostructured Organic Carbon Sources",
+      "author": { "@type": "Person", "name": "Christian Luciani" },
+      "datePublished": "2025",
+      "isPartOf": { "@type": "Periodical", "name": "ChemPhysChem" },
+      "identifier": "https://doi.org/10.1002/cphc.202400711",
+      "url": "https://doi.org/10.1002/cphc.202400711"
+    },
+    {
+      "@type": "ScholarlyArticle",
+      "headline": "Optimization of microfibrillated cellulose isolation from cocoa pod husk via mild oxalic acid hydrolysis",
+      "author": { "@type": "Person", "name": "Christian Luciani" },
+      "datePublished": "2023",
+      "isPartOf": { "@type": "Periodical", "name": "Heliyon" },
+      "identifier": "https://doi.org/10.1016/j.heliyon.2023.e17258",
+      "url": "https://doi.org/10.1016/j.heliyon.2023.e17258"
+    },
+    {
+      "@type": "ScholarlyArticle",
+      "headline": "Optimization of Microcrystalline Cellulose Isolation from Cocoa Pod Husk via Mild Oxalic Acid Hydrolysis",
+      "author": { "@type": "Person", "name": "Christian Luciani" },
+      "datePublished": "2022",
+      "isPartOf": { "@type": "Periodical", "name": "SSRN Electronic Journal" },
+      "identifier": "https://doi.org/10.2139/ssrn.4307097",
+      "url": "https://doi.org/10.2139/ssrn.4307097"
+    },
+    {
+      "@type": "ScholarlyArticle",
+      "headline": "Ivory Nut (Phytelephas equatorialis) Residues: Chemical Composition for Applications in Health Care, Industry and Environmental Remediation — Towards Sustainability",
+      "author": { "@type": "Person", "name": "Christian Luciani" },
+      "datePublished": "2022",
+      "publisher": "AIChE Annual Meeting",
+      "url": "https://aiche.confex.com/aiche/2022/meetingapp.cgi/Paper/649030"
+    },
+    {
+      "@type": "ScholarlyArticle",
+      "headline": "Neural control on multiple time scales: Insights from human stick balancing",
+      "author": { "@type": "Person", "name": "Christian Luciani" },
+      "datePublished": "2006",
+      "isPartOf": { "@type": "Periodical", "name": "Condensed Matter Physics" },
+      "identifier": "https://doi.org/10.5488/CMP.9.2.373",
+      "url": "https://doi.org/10.5488/CMP.9.2.373"
+    }
   ]
 }
 </script>
@@ -644,6 +722,23 @@ body {
 /* ══════════════════════════════════════════════
    ESTILOS DE IMPRESIÓN — CV plano A4
 ══════════════════════════════════════════════ */
+/* CV plano: oculto en pantalla, sólo visible al imprimir */
+#print-cv { display:none; }
+
+/* ══════════════════════════════════════════════
+   ACCESIBILIDAD — respeta "reducir movimiento"
+══════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  /* Revela de inmediato el contenido que normalmente entra animado */
+  [data-scroll] { opacity: 1 !important; transform: none !important; }
+}
+
 @media print {
   body > *:not(#print-cv) { display:none !important; }
   canvas,#loader,#nav,#progress,#btn-download,.cursor,.cursor-ring,.room-canvas { display:none !important; }
@@ -681,6 +776,114 @@ body {
 </style>
 </head>
 <body>
+
+<!-- ── CV PLANO PARA IMPRESIÓN / PDF (oculto en pantalla, visible al imprimir) ── -->
+<div id="print-cv" aria-hidden="true">
+  <h1>Christian Luciani</h1>
+  <div class="p-meta">
+    Investigador independiente · Cuenca, Ecuador<br>
+    cluciani@gmail.com · WhatsApp +593 99 371 6335 · Panamá +507 6651-0074<br>
+    ORCID 0000-0002-6955-5384 · christianluciani.github.io/cv-cluciani · github.com/ChristianLuciani
+  </div>
+
+  <div class="p-section">
+    <h2>Perfil</h2>
+    <p>Físico (Universidad Central de Venezuela) con candidatura doctoral en sistemas complejos.
+    Trayectoria entre la investigación científica, la tecnología educativa y la inteligencia artificial.
+    Creador de Kontablo —ontología contable universal basada en grafos para la economía agéntica— y de
+    Drahma, sistema de tutores virtuales con IA y pedagogía socrática.</p>
+  </div>
+
+  <div class="p-section">
+    <h2>Experiencia profesional</h2>
+    <div class="p-entry">
+      <h3>Consultor estratégico de sistemas — Independiente (Panamá / Ecuador)</h3>
+      <div class="p-meta">2025 – presente</div>
+      <ul>
+        <li>Plataformas BI e infraestructura digital; Zoho ERP.</li>
+        <li>Sistema de auditoría y registro de efectivo para casino tipo C.</li>
+        <li>Arquitectura SaaS para gestión clínica (CLAPPS.AI).</li>
+      </ul>
+    </div>
+    <div class="p-entry">
+      <h3>Coordinador de Laboratorios de Física — USFQ (Quito, Ecuador)</h3>
+      <div class="p-meta">2019 – 2024</div>
+      <ul>
+        <li>800+ estudiantes anuales; 36 guías de laboratorio originales.</li>
+        <li>Técnico-operador de difractómetro de rayos X; 5 publicaciones co-autoradas.</li>
+        <li>Responsable de Seguridad Radiológica institucional.</li>
+      </ul>
+    </div>
+    <div class="p-entry">
+      <h3>Diseñador de sistemas / Luminotécnico — Grupo Angel / Fluge-Panamá</h3>
+      <div class="p-meta">2016 – 2018</div>
+      <ul>
+        <li>Sistema de registro de cuentas y bóveda para casinos; procedimientos de auditoría.</li>
+      </ul>
+    </div>
+    <div class="p-entry">
+      <h3>Logística BTL y relación con clientes — Magic Dreams Productions (Panamá)</h3>
+      <div class="p-meta">2010 – 2013</div>
+      <ul>
+        <li>Activaciones BTL en eventos masivos. Clientes: Copa Airlines, Visa, ALTA, Cervecería Nacional, BAC Credomatic.</li>
+      </ul>
+    </div>
+    <div class="p-entry">
+      <h3>Fotografía · Edición · Docencia audiovisual — Venezuela</h3>
+      <div class="p-meta">2006 – 2010</div>
+      <ul>
+        <li><em>La Escalera de Patty</em> — prix du public, FECOVEN 2008; <em>9 Arepas</em> — selección ESPN 2008.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="p-section">
+    <h2>Formación</h2>
+    <div class="p-entry">
+      <h3>Licenciatura en Física — Universidad Central de Venezuela</h3>
+      <div class="p-meta">1997 – 2003 · Tesis: Modelos Cosmológicos N-Dimensionales</div>
+    </div>
+    <div class="p-entry">
+      <h3>Candidatura doctoral — Sistemas Complejos — Universidad Simón Bolívar</h3>
+      <div class="p-meta">2003 – 2006 · ABD (tesis pendiente)</div>
+    </div>
+    <div class="p-entry">
+      <h3>Especialización en Audiovisuales — Escuela de Cine y TV, Caracas</h3>
+      <div class="p-meta">2006 – 2008 · Prix du Public FECOVEN 2008</div>
+    </div>
+    <div class="p-entry">
+      <h3>II Latin American School of High Energy Physics — CERN (beca)</h3>
+      <div class="p-meta">2003 · San Miguel Regla, México</div>
+    </div>
+  </div>
+
+  <div class="p-section">
+    <h2>Publicaciones seleccionadas</h2>
+    <ul>
+      <li><strong>2026</strong> — Kontablo: A Graph-Based Universal Accounting Ontology for the M2M Agentic Economy. Preprint, Zenodo &amp; SSRN. doi.org/10.5281/zenodo.20738795</li>
+      <li><strong>2025</strong> — Highly efficient caffeine-based PVA composite film for UV shielding. <em>Carbon Trends</em>. doi.org/10.1016/j.cartre.2025.100502</li>
+      <li><strong>2025</strong> — Tunable Dielectric Carbon Materials from Hydrothermally Nanostructured Organic Carbon Sources. <em>ChemPhysChem</em>. doi.org/10.1002/cphc.202400711</li>
+      <li><strong>2019–24</strong> — 36 guías de prácticas de laboratorio de física. USFQ (publicación institucional interna).</li>
+      <li><strong>2023</strong> — Optimization of microfibrillated cellulose isolation from cocoa pod husk. <em>Heliyon</em>. doi.org/10.1016/j.heliyon.2023.e17258</li>
+      <li><strong>2022</strong> — Optimization of Microcrystalline Cellulose Isolation from Cocoa Pod Husk. <em>SSRN</em>. doi.org/10.2139/ssrn.4307097</li>
+      <li><strong>2022</strong> — Ivory Nut (Phytelephas equatorialis) Residues: Chemical Composition… 2022 AIChE Annual Meeting (abstract).</li>
+      <li><strong>2006</strong> — Neural control on multiple time scales: insights from human stick balancing. <em>Condensed Matter Physics</em>. doi.org/10.5488/CMP.9.2.373</li>
+    </ul>
+  </div>
+
+  <div class="p-section">
+    <h2>Competencias</h2>
+    <ul>
+      <li><strong>Idiomas:</strong> Español (nativo) · Inglés (intermedio) · Francés (B1).</li>
+      <li><strong>Ciencias:</strong> LaTeX · Difractometría de rayos X · Seguridad radiológica · Sistemas complejos.</li>
+      <li><strong>Programación:</strong> Python · TypeScript/JavaScript · Java · C · Agentes IA.</li>
+      <li><strong>Plataformas:</strong> Zoho ERP · Supabase · Chatwoot · Linux/macOS/Windows.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ── BOTÓN DESCARGA CV (imprimir → guardar como PDF) ── -->
+<button id="btn-download" type="button" onclick="printCV()" aria-label="Descargar CV en PDF">↓ Descargar CV</button>
 
 <!-- ── CURSOR ──────────────────────────────────────── -->
 <div class="cursor" id="cursor"></div>
@@ -929,7 +1132,7 @@ body {
   <div class="room-content">
     <div class="room-number" data-scroll="up">SALA 03</div>
     <h2 class="room-title"   data-scroll="zoom-in">Proyectos <em>Activos</em></h2>
-    <div class="room-subtitle" data-scroll="up" data-delay="1">INVESTIGACIÓN EN CURSO · DESARROLLO PRIVADO · 2024–2026</div>
+    <div class="room-subtitle" data-scroll="up" data-delay="1">INVESTIGACIÓN EN CURSO · DESARROLLO ACTIVO · 2024–2026 · 6 PROYECTOS</div>
 
     <!-- CLAPPS.AI -->
     <div class="project-card" data-scroll="from-left">
@@ -979,8 +1182,36 @@ body {
       </div>
     </div>
 
-    <!-- DRAHMA (repositorio) -->
+    <!-- ZENTROPY -->
     <div class="project-card" data-scroll="from-left" data-delay="3">
+      <span class="project-status status-active">Operacional · Stage 1 completo</span>
+      <div class="project-title"><em>ZENTROPY</em> — Zero Entropy Intelligence Station</div>
+      <div class="project-tagline">Sistema operativo cognitivo personal — captura, destila y organiza conversaciones con IA</div>
+      <ul class="project-body">
+        <li>Resuelve la entropía dialéctica: cada conversación con IA produce destellos de claridad que desaparecen. ZENTROPY los captura en base de datos estructurada (Supabase, schema <em>zentropia</em>)</li>
+        <li>Ingesta universal: Claude JSON/ZIP, ChatGPT, Markdown — parser propio (<code>ingest.py</code>)</li>
+        <li>Módulo central del ecosistema NEXOS: integra con CLAPPS, UCVE, NOOS, Kontablo</li>
+        <li>Arquitectura multi-tenant lista para uso público. Stage 2: Open WebUI local con OpenRouter</li>
+      </ul>
+      <div class="project-note">La abundancia de herramientas cognitivas sin arquitectura es la forma más sofisticada de entropía.</div>
+    </div>
+
+    <!-- ESTELÉCTICA -->
+    <div class="project-card" data-scroll="from-left" data-delay="4">
+      <span class="project-status status-private">Investigación activa</span>
+      <div class="project-title"><em>Esteléctica</em> — Epistemología del Diálogo Destilado</div>
+      <div class="project-tagline">Propuesta filosófica sobre la naturaleza del conocimiento colectivo en la era de la IA</div>
+      <ul class="project-body">
+        <li>Problema: toda conversación prolongada tiende hacia el ruido. El diálogo con IA lo acelera — la ventana de contexto se degrada, las sesiones no persisten</li>
+        <li>Propuesta: modelo <strong>Tronco/Rizoma</strong> — el rizoma explora libremente; periódicamente el par humano-IA destila hacia el Tronco (conocimiento estable)</li>
+        <li>Doble naturaleza: propuesta filosófica <em>y</em> arquitectura de software para gestión epistemológica</li>
+        <li>Línea de investigación doctoral activa — epistemología de la interacción humano-IA</li>
+      </ul>
+      <div class="project-note">Intersecta con la candidatura doctoral en sistemas complejos. Candidata a publicación académica.</div>
+    </div>
+
+    <!-- DRAHMA (repositorio) -->
+    <div class="project-card" data-scroll="from-left" data-delay="5">
       <span class="project-status status-paused">Documentación en progreso</span>
       <div class="project-title"><em>Drahma</em> — Repositorio Público</div>
       <div class="project-tagline">Documentar la arquitectura y pedagogía antes de que el campo lo reinvente como nuevo</div>
@@ -1215,6 +1446,7 @@ body {
           <div>
             <div class="pub-title">36 guías de prácticas de laboratorio de física</div>
             <div class="pub-journal">USFQ · Ingeniería, Ciencias de la Salud, Ciencias Puras · Publicación institucional interna</div>
+            <a class="pub-doi" href="https://github.com/ChristianLuciani/physics-lab-book" target="_blank">↗ Ver en GitHub (HTML5)</a>
           </div>
         </div>
         <div class="pub-item">
@@ -1255,7 +1487,7 @@ body {
         </div>
         <div class="pub-item">
           <div class="pub-year">2006</div>
-          <img class="pub-thumb" src="assets/images/papers/cabrera2006_thumb.png" alt="Condensed Matter Physics 2006" onerror="this.classList.add('error');this.alt='§'">
+          <img class="pub-thumb" src="assets/images/papers/cabrera2006_thumb.svg" alt="Condensed Matter Physics 2006" onerror="this.classList.add('error');this.alt='§'">
           <div>
             <div class="pub-title">Neural control on multiple time scales: Insights from human stick balancing</div>
             <div class="pub-journal">Cabrera, Luciani, Milton · Condensed Matter Physics · Vol. 9, No. 2</div>
