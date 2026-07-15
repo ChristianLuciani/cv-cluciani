@@ -1939,7 +1939,7 @@ function _cvWatch(c, draw) { _cvDraw.set(c.id, draw); _cvObs.observe(c); }
 
   _cvWatch(c, draw);
   function draw() {
-    if (!_cv.get('c-stairs')) return;
+    if (!_cv.get('c-stairs-ill')) return;
     ctx.clearRect(0, 0, W, H);
     const cx = W/2, cy = H/2;
     const n = 12;
@@ -1971,7 +1971,7 @@ function _cvWatch(c, draw) { _cvDraw.set(c.id, draw); _cvObs.observe(c); }
       ctx.lineTo(x1, y1 - riseNow - 8);
       ctx.stroke();
     }
-    t++; if (_cv.get('c-stairs')) requestAnimationFrame(draw);
+    t++; if (_cv.get('c-stairs-ill')) requestAnimationFrame(draw);
   }
   draw();
 })();
@@ -2007,7 +2007,6 @@ function _cvWatch(c, draw) { _cvDraw.set(c.id, draw); _cvObs.observe(c); }
     t++; if (_cv.get('c-exp')) requestAnimationFrame(draw);
   }
   draw();
-})();
 })();
 
 /* ──────────────────────────────────────────────
@@ -2115,7 +2114,6 @@ function _cvWatch(c, draw) { _cvDraw.set(c.id, draw); _cvObs.observe(c); }
     t++; if (_cv.get('c-penrose')) requestAnimationFrame(draw);
   }
   draw();
-})();
 })();
 
 /* ──────────────────────────────────────────────
