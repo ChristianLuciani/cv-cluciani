@@ -676,9 +676,9 @@ body {
   font-family:var(--font-mono); font-size:.72rem; color:var(--muted);
   text-decoration:none; padding:.7rem 1.5rem;
   border:1px solid var(--border); letter-spacing:.18em; transition:all .3s;
+  display:inline-flex; align-items:center; gap:.55em;
 }
 .contact-link:hover { color:var(--teal); border-color:var(--teal); background:rgba(0,201,192,.05); }
-.contact-link { display:inline-flex; align-items:center; gap:.55em; }
 .contact-link img.ci { width:1.05em; height:1.05em; flex-shrink:0; }
 
 /* ══════════════════════════════════════════════
@@ -1859,6 +1859,19 @@ navSections.forEach((s, i) => {
 });
 
 /* ──────────────────────────────────────────────
+   CANVAS VISIBILITY — pausa loops off-screen
+────────────────────────────────────────────── */
+const _cv = new Map();
+const _cvDraw = new Map();
+const _cvObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    _cv.set(e.target.id, e.isIntersecting);
+    if (e.isIntersecting) { const d = _cvDraw.get(e.target.id); if (d) d(); }
+  });
+});
+function _cvWatch(c, draw) { _cvDraw.set(c.id, draw); _cvObs.observe(c); }
+
+/* ──────────────────────────────────────────────
    CANVAS: HERO — Cuadrícula de cubos isométricos imposibles
 ────────────────────────────────────────────── */
 (function heroCanvas() {
@@ -1893,7 +1906,9 @@ navSections.forEach((s, i) => {
     ctx.globalAlpha = 1;
   }
 
-  (function draw() {
+  _cvWatch(c, draw);
+  function draw() {
+    if (!_cv.get('hero-canvas')) return;
     ctx.clearRect(0, 0, W, H);
     const s = 50, h = s * 0.866;
     const cols = Math.ceil(W / (s * 1.5)) + 2;
@@ -1902,8 +1917,9 @@ navSections.forEach((s, i) => {
       for (let cc = -1; cc < cols; cc++)
         cube(cc*s*1.5 + (r%2 ? s*.75 : 0), r*h, s, 0.5, (r*cols+cc)*1.9);
     t++;
-    requestAnimationFrame(draw);
-  })();
+    if (_cv.get('hero-canvas')) requestAnimationFrame(draw);
+  }
+  draw();
 })();
 
 /* NECKER ILL (c-necker-ill) migrated to TypeScript: src/ts/illusions/neckerIll.ts */
@@ -1921,7 +1937,9 @@ navSections.forEach((s, i) => {
   const resize = () => { W = c.width = c.offsetWidth; H = c.height = c.offsetHeight; };
   resize(); window.addEventListener('resize', resize);
 
-  (function draw() {
+  _cvWatch(c, draw);
+  function draw() {
+    if (!_cv.get('c-stairs')) return;
     ctx.clearRect(0, 0, W, H);
     const cx = W/2, cy = H/2;
     const n = 12;
@@ -1953,8 +1971,9 @@ navSections.forEach((s, i) => {
       ctx.lineTo(x1, y1 - riseNow - 8);
       ctx.stroke();
     }
-    t++; requestAnimationFrame(draw);
-  })();
+    t++; if (_cv.get('c-stairs')) requestAnimationFrame(draw);
+  }
+  draw();
 })();
 
 /* ──────────────────────────────────────────────
@@ -1968,7 +1987,9 @@ navSections.forEach((s, i) => {
   const resize = () => { W = c.width = c.offsetWidth; H = c.height = c.offsetHeight; };
   resize(); window.addEventListener('resize', resize);
 
-  (function draw() {
+  _cvWatch(c, draw);
+  function draw() {
+    if (!_cv.get('c-exp')) return;
     ctx.clearRect(0, 0, W, H);
     const s1x = W*.78, s1y = H*.3, s2x = W*.88, s2y = H*.7, step = 20;
     for (let x = 0; x < W; x += step) {
@@ -1983,8 +2004,10 @@ navSections.forEach((s, i) => {
       }
     }
     ctx.globalAlpha = 1;
-    t++; requestAnimationFrame(draw);
-  })();
+    t++; if (_cv.get('c-exp')) requestAnimationFrame(draw);
+  }
+  draw();
+})();
 })();
 
 /* ──────────────────────────────────────────────
@@ -2046,7 +2069,9 @@ navSections.forEach((s, i) => {
   const resize = () => { W = c.width = c.offsetWidth; H = c.height = c.offsetHeight; };
   resize(); window.addEventListener('resize', resize);
 
-  (function draw() {
+  _cvWatch(c, draw);
+  function draw() {
+    if (!_cv.get('c-penrose')) return;
     ctx.clearRect(0, 0, W, H);
     const cx = W/2, cy = H/2;
     const s  = Math.min(W, H) * 0.32 * (1 + Math.sin(t * 0.015) * 0.03);
@@ -2087,8 +2112,10 @@ navSections.forEach((s, i) => {
     ctx.lineTo(pts[0][0] - thick*.15, pts[0][1] + thick*.6);
     ctx.stroke();
 
-    t++; requestAnimationFrame(draw);
-  })();
+    t++; if (_cv.get('c-penrose')) requestAnimationFrame(draw);
+  }
+  draw();
+})();
 })();
 
 /* ──────────────────────────────────────────────
